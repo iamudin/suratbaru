@@ -1,0 +1,36 @@
+{
+    "name": "leazycms/web",
+    "description": "Build Easy Cms Laravel",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["PHP"],
+    "autoload": {
+        "psr-4": {
+            "Leazycms\\Web\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nurul Hudin",
+            "email": "m.nurul.hudin@gmail.com"
+        }
+    ],
+    "extra": {
+
+        "laravel": {
+            "providers": [
+                "Leazycms\\Web\\CmsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "leazycms/flc": "*",
+        "yajra/laravel-datatables-oracle": "*",
+        "intervention/image": "~2.0",
+        "stevebauman/location":"*",
+        "nesbot/carbon": "*",
+        "spatie/laravel-backup":"*"
+    }
+
+}
