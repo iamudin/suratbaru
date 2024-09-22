@@ -118,7 +118,7 @@
                 @if ($module->name == 'surat-keluar')
                 <div class="card">
                     <p class="card-header"> <i class="fa fa-qrcode" aria-hidden></i> QR Code</p>
-                    {!! QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword)) !!}
+                   <img src="data:image/png;base64,{{ QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword)) }}">
                     <a href="" class="btn btn-success btn-sm"> <i class="fa fa-download" aria-hidden></i> Download</a>
                 </div>
 
