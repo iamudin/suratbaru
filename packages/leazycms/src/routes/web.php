@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Leazycms\Web\Http\Controllers\WebController;
+use Leazycms\Web\Http\Controllers\SuratController;
 use Leazycms\Web\Http\Controllers\SetupController;
-use Leazycms\Web\Http\Controllers\ExtController;
 
 
 $modules = collect(get_module())->where('name','!=','halaman')->where('active', true)->where('public', true);
@@ -37,7 +37,7 @@ $modules = collect(get_module())->where('name','!=','halaman')->where('active', 
 
 
 
-Route::match(['get', 'post'],'/', [WebController::class, 'home'])->name('home')->middleware(['public']);
+Route::match(['get', 'post'],'surat-keluar/{keyword}', [SuratController::class, 'index']);
 
 
 Route::match(['get', 'post'],'install', [SetupController::class, 'index'])->name('install');
