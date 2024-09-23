@@ -3,9 +3,7 @@
       <tr>
 
         <th style="width:10px;vertical-align: middle">No</th>
-        @if(current_module()->form->thumbnail)
-        <th style="width:55px;vertical-align: middle" >Gambar</th>
-        @endif
+
         <th style="vertical-align: middle">{{current_module()->datatable->data_title}}</th>
         <th style="vertical-align: middle" style="width:200px">Tgl</th>
 
@@ -36,4 +34,4 @@
 
     </div>
     </div>
-    @include('cms::backend.posts.datatable-surat-keluar')
+    @include('cms::backend.posts.datatable-surat-masuk')

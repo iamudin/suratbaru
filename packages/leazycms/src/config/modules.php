@@ -15,7 +15,7 @@ return [
             ],
             'form'=>[
                 'unique_title' => false,
-                'post_parent' => false,
+                'post_parent' => ['Referensi Surat (opsional)','surat-masuk'],
                 'thumbnail' => false,
                 'editor' => false,
                 'category' => true,
@@ -23,7 +23,6 @@ return [
                 'looping_name'=>'Arsip',
                 'looping_data' => false,
                 'custom_field' => array(
-                    ['File Surat','file'],
                     ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas']],
                     ['Perihal','text'],
                     ['Nomor','text'],
@@ -57,27 +56,26 @@ return [
             'route' => ['index','create','show','update','delete'],
             'datatable'=>[
                 'custom_column' => false,
-                'data_title' => 'KODE SURAT',
+                'data_title' => 'NOMOR SURAT',
             ],
             'form'=>[
                 'unique_title' => false,
                 'post_parent' => false,
                 'thumbnail' => false,
-                'editor' => true,
+                'editor' => false,
                 'category' => false,
                 'tag' => false,
                 'looping_name'=>'Arsip',
                 'looping_data' => false,
                 'custom_field' => array(
                     ['File Surat','file'],
-                    ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas']],
                     ['Perihal','text'],
-                    ['Nomor','text'],
-                    ['Instansi','text'],
-                    ['Alamat','text'],
-                    ['Penandatangan','text'],
-                    ['Diterbitkan','date'],
-                    ['Arsipkan Surat yang Sudah TTE','file'],
+                    ['Tanggal Surat','date'],
+                    ['Tanggal Diterima','date'],
+                    ['Butuh Dibalas',['Iya','Tidak']],
+                    ['Instansi Pengirim','text'],
+                    ['Alamat Instansi','text'],
+                    ['Tujuan Surat','tujuan_surat'],
                     )
             ],
             'web'=>[

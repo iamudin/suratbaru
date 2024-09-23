@@ -53,6 +53,7 @@ $request->user()->hasRole(get_post_type(),'update');
 $module = current_module();
 
 if($request->user()->isAdmin()){
+    abort_if(get_post_type()!='unit',403);
    $data=  $post->with('category','user')->whereType(get_post_type())->find($id) ;
 }elseif($request->user()->isAdminKantor()){
     $data = $post->withWhereHas('user',function($q)use($request){
@@ -60,6 +61,10 @@ if($request->user()->isAdmin()){
     })->with('category','user')->whereType(get_post_type())->find($id);
 }else{
     $data = $post->whereBelongsTo($request->user())->with('category','user')->whereType(get_post_type())->find($id);
+    if(get_post_type()=='surat-masuk'){
+    $data = $post->with('category','user')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $request->user()->unit->title.' - '.$request->user()->unit->parent->title)->find($id);
+
+    }
 }
 
 if (!$data) {
@@ -254,10 +259,17 @@ public function recache($type){
             $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->published();
         }elseif($req->user()->isAdminKantor()){
             $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->withWhereHas('user',function($q)use($req){
-                $q->whereIn('unit_id',$req->user()->unit->childs->pluck('id')->toArray());
-            })->published();
+                $q->whereIn('unit_id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
+            });
+            if (get_post_type() !== 'surat-masuk') {
+                $data->published();
+            }
         }else{
             $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereBelongsTo($req->user());
+
+            if (get_post_type() =='surat-masuk') {
+                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $req->user()->unit->title.' - '.$req->user()->unit->parent->title)->published();
+            }
         }
 
         return DataTables::of($data)
@@ -331,12 +343,21 @@ public function recache($type){
                 $btn .= '<a class="btn btn-success btn-sm fa fa-envelope" href="'.$row->data_field['arsipkan_surat_yang_sudah_tte'].'" title="Lihat Arsip Surat"></a>';
                 }
                 $btn .= current_module()->web->detail && $row->status=='publish' ? '<a target="_blank" href="' .url($row->url.'/').'"  class="btn btn-info btn-sm fa fa-globe"></a>':'';
+                if(request()->user()->isAdmin()){
+                    $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
+                }
+                if(request()->user()->isAdminKantor()){
+                    $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-masuk' ? 'fa-edit' : 'fa-eye').'"></a>';
+                }
+                if(request()->user()->isOperator()){
+                    $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-keluar' ? 'fa-edit' : 'fa-eye').'"></a>';
+                }
 
-                $btn .= Route::has($row->type.'.edit') ?'<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type!='unit' && !request()->user()->isOperator() ? 'fa-eye' : 'fa-edit').'"></a>':'';
+
                 $btn .= $row->type=='media' ? '<button title="Copy URL media" class="btn btn-sm btn-info fa fa-copy" onclick="copy(\''.route('stream',basename($row->media)).'\')"></button>' : '';
 
 
-                if((request()->user()->isOperator() && $row->type!='unit' ) || (request()->user()->isAdmin() && $row->type=='unit' )){
+                if((request()->user()->isOperator() && $row->type=='surat-keluar' ) || (request()->user()->isAdmin() && $row->type=='unit' ) || (request()->user()->isAdminKantor() && $row->type=='surat-masuk' )){
 
                 $btn .= Route::has($row->type . '.destroyer') && empty($row->childs_count) ? (!empty($row->data_loop) ? '': '<button onclick="deleteAlert(\''.route($row->type.'.destroyer',$row->id).'\')" class="btn btn-danger btn-sm fa fa-trash-o"></button>' ) :'';
                 }

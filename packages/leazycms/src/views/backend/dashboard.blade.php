@@ -25,6 +25,17 @@
             </div>
           </div>
           @endforeach
+          @if(Auth::user()->isAdmin())
+          <div title="Klik untuk selengkapnya" class="pointer col-md-6 col-lg-3" onclick="location.href='{{route('user')}}'">
+            <div class="widget-small danger coloured-icon"><i class="icon fa fa-users fa-3x"></i>
+              <div class="info pl-3">
+                <p class="mt-2 text-muted">Pengguna</p>
+                <h2><b>{{\Leazycms\Web\Models\User::whereNotIn('level',['admin'])->count()}}</b></h2>
+              </div>
+            </div>
+          </div>
+          @endif
+
         </div>
 </div>
 <div class="col-lg-12 mb-3">
@@ -57,28 +68,7 @@
 </div>
 </div>
 
-<div class="col-lg-12 mt-3">
-  <div class="card" style="padding:15px">
-  <h4 for=""  style="margin-bottom:20px"> <i class="fa fa-info" aria-hidden="true"></i> Rincian Trafik <span class="pull-right"><small>Pilih </small> <input max="{{date('Y-m-d')}}"  onchange="$('.datatable').DataTable().ajax.reload();" style="width:120px" type="date" class="form-control-sm " id="timevisit" ></span></h4>
 
-  <div class="table-responsive"> <table class="table datatable" style="font-size:small;width:100%">
-  <thead><tr>
-    <th width="18%">Time</th>
-    <th width="15%">Page</th>
-    <th width="15%">Reference</th>
-    <th width="20%">IP</th>
-    <th width="10%">Browser</th>
-    <th width="10%">Device</th>
-    <th width="10%">OS</th>
-  </tr></thead>
-  <tbody>
-
-  </tbody>
-  </table>
-  </div>
-
-</div>
-</div>
 <script type="text/javascript">
           window.addEventListener('DOMContentLoaded', function() {
       /*  var sort_col = $('.datatable').find("th:contains('Time')")[0].cellIndex;*/

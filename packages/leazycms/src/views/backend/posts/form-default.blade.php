@@ -21,6 +21,15 @@
                             class="pointer copy pull-right badge badge-primary" data-copy="{{ url($post->url) }}"><i
                                 class="fa fa-copy" aria-hidden></i> <b>Salin</b></span></div>
                 @endif
+
+                @if ($post->status=='publish' && get_post_type() == 'surat-keluar')
+                <div style="border-left:3px solid green" class="alert alert-success"><b>URL : </b><a
+                        title="Kunjungi URL" data-toggle="tooltip" href="{{ url('surat-keluar/'.$post->keyword) }}"
+                        target="_blank"><i><u>{{ url('surat-keluar/'.$post->keyword) }}</u></i></a> <span
+                        title="Klik Untuk Menyalin alamat URL {{ $module->title }}" data-toggle="tooltip"
+                        class="pointer copy pull-right badge badge-primary" data-copy="{{ url('surat-keluar/'.$post->keyword) }}"><i
+                            class="fa fa-copy" aria-hidden></i> <b>Salin</b></span></div>
+            @endif
                 @include('cms::backend.layout.error')
             </div>
             <div class="col-lg-9">
@@ -57,16 +66,42 @@
                                 ->get();
                         } else {
                             $par = Leazycms\Web\Models\Post::whereType($pp[1])
-                                ->whereStatus('publish')
-                                ->whereNotIn('id',[$post->id])
-                                ->wherePinned('Y')
-                                ->select('id', 'title')
-                                ->get();
+                                ->whereNotIn('id',[$post->id]);
+                            if($post->type=='unit'){
+                               $par = $par->wherePinned('Y');
+                            }
+                            if($post->type=='surat-keluar' && Auth::user()->isOperator()){
+
+                                    $par = $par->WhereJsonContains('data_field->tujuan_surat', Auth::user()->unit->title.' - '.Auth::user()->unit->parent?->title);
+
+
+                            }
+                               $par =  $par->select('id', 'title','parent_id')->published();
+                               if(Auth::user()->isAdminKantor() && $post->type=='surat-keluar'){
+                                $par =  $par->whereId($post->parent_id)->first();
+                               }else{
+                                $par =  $par->get();
+                               }
                         }
                     }
                     ?>
+                    @if(Auth::user()->isAdminKantor() && $post->type=='surat-keluar')
                     <h6>{{ $pp[0] }}</h6>
+                    @if($par)
+                    <a  href="/panel/surat-masuk/{{ $par->id }}/edit" target="_blank" class="btn btn-sm btn-success "> <i class="fa fa-eye"></i> {{ $par->title }}</a><br>
+                    @else
+                    <span class="badge badge-danger"> <i class="fa fa-close"></i> Tidak Ada Referensi Surat</span><br>
+                    @endif
+
+                    @endif
+                    @if((!Auth::user()->isAdminKantor() && $post->type=='surat-keluar') || Auth::user()->isAdmin() && $post->type=='unit')
+
+                    <h6>{{ $pp[0] }}  <small id="refsurat" style="cursor:pointer;display:none" href="" class="badge badge-success"> <i class="fa fa-eye"></i> Lihat Surat</small></h6>
                     <select @if (isset($pp[3]) && $pp[3] == 'required') required @endif class="form-control form-control-sm"
+                    @if($post->type=='surat-keluar')
+                    onchange="if(this.value) {$('#refsurat').attr('onclick', 'window.open(\'/panel/surat-masuk/' + this.value + '/edit\', \'_blank\')').show()}else{$('#refsurat').hide()}"
+                    @endif
+
                         name="parent_id">
                         <option value="">--pilih--</option>
 
@@ -76,7 +111,7 @@
                         @endforeach
 
                     </select>
-
+                    @endif
                 @endif
 
                 @if ($module->form->custom_field)
@@ -118,7 +153,7 @@
                 @if ($module->name == 'surat-keluar')
                 <div class="card">
                     <p class="card-header"> <i class="fa fa-qrcode" aria-hidden></i> QR Code</p>
-                   <img src="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}">
+                   {{-- <img src="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}"> --}}
                     <a href="" class="btn btn-success btn-sm"> <i class="fa fa-download" aria-hidden></i> Download</a>
                 </div>
 

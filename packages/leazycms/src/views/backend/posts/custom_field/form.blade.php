@@ -17,6 +17,21 @@
 @include('cms::backend.posts.custom_field.date')
 @elseif ($r[1] == 'datetime')
 @include('cms::backend.posts.custom_field.datetime')
+@elseif ($r[1] == 'tujuan_surat')
+
+<small >Tujuan Surat</small>
+<select class="form-control form-control-sm" name="tujuan_surat">
+   <option value="">--pilih--</option>
+   @foreach(\Leazycms\Web\Models\Post::whereType('unit')->select('id','title','user_id','parent_id')->where('id',Auth::user()->unit->id)->with('childs')->get() as $i)
+   <option  {{($field && isset($field[_us($r[0])]) && $field[_us($r[0])]==$i->title) ? 'selected':'' }} value="{{$i->title}}">{{$i->title}}</option>
+   @if($i->childs)
+   @foreach($i->childs as $child)
+   <option  {{($field && isset($field[_us($r[0])]) && $field[_us($r[0])]==$child->title.' - '.$i->title) ? 'selected':'' }} value="{{$child->title.' - '.$i->title}}">{{$child->title.' - '.$i->title}}</option>
+   @endforeach
+   @endif
+   @endforeach
+</select>
+
 @elseif (is_array($r[1]))
 @include('cms::backend.posts.custom_field.option')
 @elseif($r[1]=='break')
@@ -25,3 +40,4 @@
 @else
 @endif
 @endforeach
+
