@@ -157,6 +157,7 @@
                 <div class="card">
                     <p class="card-header"> <i class="fa fa-qrcode" aria-hidden></i> QR Code</p>
                    <img src="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}">
+                    <a href="{{ url('qr_surat/'.$post->keyword) }}" download class="btn btn-success btn-sm"> <i class="fa fa-download" aria-hidden></i> Download</a>
                 </div>
 
             @endif
