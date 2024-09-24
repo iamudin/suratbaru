@@ -43,7 +43,7 @@ return [
 
     'image' => [
         'enabled' => true,
-        'binary'  => env('WKHTML_IMG_BINARY', 'C:\wkhtmltopdf\bin\wkhtmltoimage.exe'),
+        'binary'  => env('WKHTML_IMG_BINARY', base_path('vendor/h4cc/wkhtmltoimage-amd64/bin/wkhtmltoimage-amd64')),
         'timeout' => false,
         'options' => [],
         'env'     => [],
