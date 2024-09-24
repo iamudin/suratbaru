@@ -111,7 +111,7 @@ function addImageToLastFooter($templatePath, $imageUrl, $outputDocPath,$keyword)
     // Hapus file gambar sementara setelah selesai
     Storage::delete($tempImagePath);
 
-    return file_get_contents("https://view.officeapps.live.com/op/view.aspx?src=".url('hasil_docx/'.$keyword.'.docx'));
+    return file_get_contents("https://view.officeapps.live.com/op/view.aspx?src=".url('hasil_docx/'.$keyword.'.docx?time='.time()));
 }
 function generate_surat($keyword){
     abort_if(!request()->user()->isOperator(),'403','Access Limited!');
