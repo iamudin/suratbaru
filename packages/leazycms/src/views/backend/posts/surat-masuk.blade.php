@@ -5,10 +5,10 @@
         <th style="width:10px;vertical-align: middle">No</th>
 
         <th style="vertical-align: middle">{{current_module()->datatable->data_title}}</th>
-        <th style="vertical-align: middle" style="width:200px">Tgl</th>
+        <th style="vertical-align: middle" style="width:200px">Tgl Terima</th>
 
-        <th style="vertical-align: middle">Jenis</th>
-        <th style="vertical-align: middle">Perihal</th>
+        <th style="vertical-align: middle">Hal</th>
+        <th style="vertical-align: middle">Asal</th>
         @if($custom = current_module()->datatable->custom_column)
         <th style="vertical-align: middle">{{$custom}}</th>
         @endif

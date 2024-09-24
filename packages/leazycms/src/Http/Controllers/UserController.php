@@ -21,8 +21,13 @@ class UserController extends Controller implements HasMiddleware
         return [
             new Middleware('auth'),
             function (Request $request, Closure $next) {
-                if(!$request->user()->isAdmin() && in_array($request->segment(2),['user','role'])){
-                    return redirect()->route('panel.dashboard')->send()->with('danger','Akses hanya admin');
+                if($request->user()->isAdminKantor() && $request->segment(2)=='user'){
+
+                }else{
+                    if(!$request->user()->isAdmin() && in_array($request->segment(2),['user','role'])){
+                        return redirect()->route('panel.dashboard')->send()->with('danger','Akses hanya admin');
+
+                }
                 }
                 return $next($request);
             },
@@ -39,7 +44,7 @@ class UserController extends Controller implements HasMiddleware
             $data= $request->validate([
                 'photo'=> 'nullable|file|mimetypes:image/jpeg,image/png',
                 'name'=> 'required|string',
-                'username'=>'required|string|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users')->ignore($user->id),
+                'username'=>'required|string|min:5|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users')->ignore($user->id),
                 'email'=> 'required|string|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users')->ignore($user->id),
                 'password'=>'nullable|string|confirmed|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]+$/',
             ]);
@@ -65,12 +70,20 @@ class UserController extends Controller implements HasMiddleware
      }
     public function datatable(Request $request)
     {
-        $data = User::with('unit.parent')->withCount('posts')->where('level','!=','admin');
+
+        if($request->user()->isAdminKantor())
+        {
+            $data = User::with('unit.parent')->withCount('posts')->whereNotIn('level',['admin','AdminKantor'])->whereIn('unit_id',$request->user()->unit->childs->pluck('id')->toArray());
+
+        }else{
+            $data = User::with('unit.parent')->withCount('posts')->where('level','!=','admin');
+
+        }
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '<div class="btn-group">';
-                $btn .= '<a target="_blank" href="' .url($row->url).'"  class="btn btn-info btn-sm fa fa-globe"></a>';
+
                 $btn .= '<a href="' . route('user.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
                 $btn .= $row->posts->count() ==0 ? '<button onclick="deleteAlert(\'' . route('user.destroy', $row->id).'\')" class="btn btn-danger btn-sm fa fa-trash"></button>':'';
                 $btn .= '</div>';
@@ -114,7 +127,7 @@ public function store(Request $request){
         'foto'=> 'nullable|mimetypes:image/jpeg,image/png',
         'unit_id'=> 'required',
         'email'=>'required|email|'.Rule::unique('users'),
-        'username'=>'required|string|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users'),
+        'username'=>'required|string|min:5|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users'),
         'status'=>'required|string|in:active,blocked',
         'level'=>'required|string|in:'.get_option('roles'),
         'password'=>'required|string|confirmed|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]+$/',
@@ -139,7 +152,7 @@ public function update(Request $request, User $user){
         'foto'=> 'nullable|mimetypes:image/jpeg,image/png',
         'unit_id'=> 'required',
         'email'=>'required|email|'.Rule::unique('users')->ignore($user->id),
-        'username'=>'required|string|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users')->ignore($user->id),
+        'username'=>'required|string|min:5|regex:/^[a-zA-Z\p{P}]+$/u|'.Rule::unique('users')->ignore($user->id),
         'status'=>'required|string|in:active,blocked',
         'level'=>'required|string|in:'.get_option('roles'),
         'password'=>'nullable|string|confirmed|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]+$/',

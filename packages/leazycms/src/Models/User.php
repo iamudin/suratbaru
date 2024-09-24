@@ -64,7 +64,7 @@ class User extends Authenticatable
     }
     public function unit()
     {
-        return $this->belongsTo(Post::class,'unit_id','id')->select('title','id','parent_id');
+        return $this->belongsTo(Post::class,'unit_id','id')->select('title','id','parent_id','category_id');
     }
 
     public function isActive(){

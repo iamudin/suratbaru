@@ -39,17 +39,12 @@
                     orderable: false
                 },
                 {
-                    data: 'ext_column.diterbitkan',
+                    data: 'ext_column.tgl_diterima',
                     searchable: false,
-                    name: 'ext_column.diterbitkan',
+                    name: 'ext_column.tgl_diterima',
                     orderable: false
                 },
-                {
-                    data: 'ext_column.jenis_file',
-                    searchable: false,
-                    name: 'ext_column.jenis_file',
-                    orderable: false
-                },
+
 
                 {
                     data: 'ext_column.perihal',
@@ -57,7 +52,12 @@
                     name: 'ext_column.perihal',
                     orderable: false
                 },
-
+                {
+                    data: 'ext_column.asal',
+                    searchable: false,
+                    name: 'ext_column.asal',
+                    orderable: false
+                },
                 @if (current_module()->datatable->custom_column)
                     {
                         data: 'data_field',

@@ -85,6 +85,9 @@
                         }
                     }
                     ?>
+                     @if(Auth::user()->isAdminKantor() && $post->type=='unit')
+                    <input type="hidden" name="parent_id" value="{{ Auth::user()->unit->id == $post->id ? null :  Auth::user()->unit->id }}">
+                     @endif
                     @if(Auth::user()->isAdminKantor() && $post->type=='surat-keluar')
                     <h6>{{ $pp[0] }}</h6>
                     @if($par)
@@ -201,6 +204,9 @@
 
                 @endif
                 @if ($module->form->category)
+                @if(Auth::user()->isAdminKantor() && $post->type=='unit')
+                <input type="hidden" name="category_id" value="{{ Auth::user()->unit->category_id }}">
+                @else
                     <small for="">Kategori {{ $module->title }} </small><br>
                     <select class="form-control form-control-sm" name="category_id">
                         <option value=""> --pilih-- </option>
@@ -210,6 +216,7 @@
                             </option>
                         @endforeach
                     </select>
+                @endif
                     @if(Auth::user()->isAdmin())
                     <div class="text-right"><small class="text-primary">
                         <a href="{{ route($post->type . '.category') }}"> <i
@@ -243,7 +250,7 @@
                         </label>
                     </div>
                 @endif
-                @if($module->name=='unit')
+                @if($module->name=='unit' && !Auth::user()->isAdminKantor())
                     <div class="animated-checkbox">
                         <label>
                             <input {{ $post && $post->pinned == 'Y' ? 'checked=checked' : '' }} type="checkbox"
@@ -268,7 +275,7 @@
                         </label>
                     </div>
                 </div>
-                <button data-toggle="tooltip"   class="btn btn-md btn-primary w-100 add" @if(Auth::user()->id == $post->user_id) type="submit" title="Simpan Perubahan" @else disabled title="Anda Tidak Memiliki Akses" @endif>SIMPAN</button><br><br>
+                <button data-toggle="tooltip"   class="btn btn-md btn-primary w-100 add" @if(Auth::user()->id == $post->user_id ||( Auth::user()->isAdminKantor() && $post->type=='unit')) type="submit" title="Simpan Perubahan" @else disabled title="Anda Tidak Memiliki Akses" @endif>SIMPAN</button><br><br>
             </>
         </div>
     </form>

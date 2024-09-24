@@ -1,6 +1,10 @@
 @foreach ($module->form->custom_field as $r )
 @if($r[1] == 'text')
+@if(Auth::user()->isAdminKantor() && $post->type=='unit' && $post->pinned!='Y')
+@else
 @include('cms::backend.posts.custom_field.text')
+
+@endif
 @elseif ($r[1] == 'textarea')
 @include('cms::backend.posts.custom_field.textarea')
 @elseif ($r[1] == 'file')

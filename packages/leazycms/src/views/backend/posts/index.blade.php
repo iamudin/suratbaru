@@ -7,15 +7,19 @@
 <div class="pull-right">
     <div class="btn-group">
     @if(Route::has(get_post_type().'.create'))
+
     @if(Auth::user()->isAdmin() && get_post_type()=='unit')
     <a href="{{route(get_post_type().'.create')}}" class="btn btn-primary btn-sm"> <i class="fa fa-plus" aria-hidden></i> Tambah</a>
     @endif
-    @if(Auth::user()->isAdminKantor() && get_post_type()=='surat-masuk')
+
+    @if(Auth::user()->isAdminKantor() && get_post_type()=='surat-masuk' || (Auth::user()->isAdminKantor() && get_post_type()=='unit'))
     <a href="{{route(get_post_type().'.create')}}" class="btn btn-primary btn-sm"> <i class="fa fa-plus" aria-hidden></i> Tambah</a>
     @endif
+
     @if(Auth::user()->isOperator() && get_post_type()=='surat-keluar')
     <a href="{{route(get_post_type().'.create')}}" class="btn btn-primary btn-sm"> <i class="fa fa-plus" aria-hidden></i> Tambah</a>
     @endif
+
     @endif
     @if(Route::has(get_post_type().'.category') && Auth::user()->isAdmin()) <a href="{{route(get_post_type().'.category')}}" class="btn btn-dark btn-sm"> <i class="fa fa-tags" aria-hidden></i> Kategori</a> @endif
 </div>

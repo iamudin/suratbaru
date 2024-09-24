@@ -27,10 +27,11 @@
       <small for="">Email</small>
       <input required type="email" class="form-control form-control-sm email" name="email" placeholder="Masukkan Email" value="{{$user->email}}">
 
-      <small  for="">Username</small>
+      <small  for="">Username <font color="red">(Tanpa spasi)</font></small>
       <input required type="text" class="form-control form-control-sm username" name="username" placeholder="Masukkan Username" value="{{$user->username}}">
       <small for="">Password</small>
       <input type="password" class="form-control form-control-sm password" name="password" placeholder="Masukkan Password" value="">
+      <small class="text-danger">Minimal 8 karakter dan di butuhkan Min 1 Kapital, 1 huruf kecil, 1 angka dan symbol khusus</small><br>
         <small for="">Konfimasi Password</small>
         <input type="password" class="form-control form-control-sm password" name="password_confirmation" placeholder="Masukkan Password" value="">
         <small class="text-danger">*) Kosongkan jika tidak mengubah password</small>

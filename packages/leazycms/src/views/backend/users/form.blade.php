@@ -46,7 +46,14 @@
                 <label class="mb-0">Unit / Instansi</label>
                 <select name="unit_id"class="form-control-sm form-control" required>
                     <option value="">--pilih--</option>
-            @foreach(query()->index('unit') as $row)
+                    @php
+                    if(Auth::user()->isAdmin()){
+                        $dataunit = query()->whereType('unit')->published()->get();
+                    }else{
+                        $dataunit = query()->whereType('unit')->whereIn('id',Auth::user()->unit->childs->pluck('id')->toArray())->select('id','title','parent_id')->get();
+                    }
+                    @endphp
+            @foreach($dataunit as $row)
                     @php
                         if($row->parent){
                     $unit = $row->title .' | '.$row->parent->title;
@@ -62,6 +69,7 @@
 
 
             </div>
+            @if(Auth::user()->isAdmin())
             <div class="form-group mt-2 mb-2">
                 <label class="mb-0">Level</label>
                 @if(get_option('roles'))
@@ -80,6 +88,9 @@
                 @endif
 
             </div>
+            @else
+            <input type="hidden" name="level" value="operator">
+            @endif
             <div class="form-group mt-2  mb-2">
                 <label class="mb-0">Username [ <i class="text-danger">Tanpa spasi</i> ]</label>
                   <input class="form-control form-control-sm " name="username" type="text" placeholder="Masukkan username" value="{{$user ? $user->username : old('username')}}">

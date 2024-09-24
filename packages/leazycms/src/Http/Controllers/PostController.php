@@ -59,6 +59,11 @@ if($request->user()->isAdmin()){
     $data = $post->withWhereHas('user',function($q)use($request){
         $q->whereIn('unit_id',array_merge($request->user()->unit->childs->pluck('id')->toArray(),[$request->user()->id]));
     })->with('category','user')->whereType(get_post_type())->find($id);
+
+    if(get_post_type()=='unit'){
+        $data = Post::onType(get_post_type())
+        ->where('user_id',$request->user()->id)->orWhereIn('id',array_merge($request->user()->unit->childs->pluck('id')->toArray(),[$request->user()->unit->id]))->find($id);
+    }
 }else{
     $data = $post->whereBelongsTo($request->user())->with('category','user')->whereType(get_post_type())->find($id);
     if(get_post_type()=='surat-masuk'){
@@ -71,6 +76,16 @@ if (!$data) {
     return redirect(admin_url(get_post_type()))->with('danger', get_module_info('title') . ' Tidak Ditemukan');
 }
 $field = (!empty($data->data_field)) ? collect($data->data_field) : [];
+
+if($request->user()->isOperator() && get_post_type()=='surat-keluar'){
+    if(isset($data->field->arsipkan_surat_yang_sudah_tte) && !empty($data->field->arsipkan_surat_yang_sudah_tte)){
+        $lf = public_path('hasil_docx/'.$data->keyword.'.docx');
+        if(file_exists($lf) && media_exists($data->field->arsipkan_surat_yang_sudah_tte)){
+            unlink($lf);
+        }
+
+    }
+}
 $looping_data = $data->data_loop ? (collect($module->form->looping_data)->where([0], 'Sort')->first() ? collect($data->data_loop)->sortBy('sort') : $data->data_loop) : [];
 return view('cms::backend.posts.form',[
         'post'=>$data,
@@ -111,9 +126,15 @@ abort_if(!is_numeric($id),'403');
 }
 public function update(Request $request, Post $post){
     $request->user()->hasRole(get_post_type(),'update');
-    if($post->user_id != $request->user()->id){
-        return redirect(admin_url(get_post_type()))->with('danger', 'Proses Tidak Dibenarkan');
+    if($request->user()->isAdminKantor() && $post->type=='unit'){
+
     }
+    else{
+        if($post->user_id != $request->user()->id){
+            return redirect(admin_url(get_post_type()))->with('danger', 'Proses Tidak Dibenarkan');
+        }
+    }
+
     $module = current_module();
     if($module->form->custom_field){
 
@@ -256,14 +277,28 @@ public function recache($type){
     public function datatable(Request $req)
     {
         if($req->user()->isAdmin()){
-            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->published();
+
+            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type());
+            if(get_post_type()!='unit'){
+                $data = $data->published();
+            }
         }elseif($req->user()->isAdminKantor()){
+
+
             $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->withWhereHas('user',function($q)use($req){
                 $q->whereIn('unit_id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
             });
-            if (get_post_type() !== 'surat-masuk') {
+
+            if(get_post_type()=='unit'){
+                $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category','user')->withCount('childs')->withCount('visitors')->whereType(get_post_type())
+                ->where('user_id',$req->user()->id)->orWhereIn('id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
+
+            }
+            if (get_post_type() == 'surat-keluar' ) {
                 $data->published();
             }
+
+
         }else{
             $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereBelongsTo($req->user());
 
@@ -314,23 +349,33 @@ public function recache($type){
             ->addColumn('ext_column', function ($row) {
                     $df = $row->data_field;
 
-                    $a['jenis_file'] = '<small>'.(isset($df['jenis_file']) ? $df['jenis_file'] : null).'</small>';
-                    $a['perihal'] = '<small>'.(isset($df['perihal']) ? $df['perihal'] : null).'</small>';
-                    $a['diterbitkan'] = isset($df['diterbitkan'])? '<small class="badge badge-success">'.date('d M Y',strtotime($df['diterbitkan'])).'</small>' : '';
+                    $a['jenis_file'] = '<small>'.(isset($df['jenis_file']) && !empty($df['jenis_file']) ? $df['jenis_file'] : '__').'</small>';
+                    $a['perihal'] = '<small>'.(isset($df['perihal']) && !empty($df['perihal']) ? $df['perihal'] : '__').'</small>';
+                    $a['diterbitkan'] = isset($df['diterbitkan']) && !empty($df['diterbitkan'])? '<small class="badge badge-success">'.date('d M Y',strtotime($df['diterbitkan'])).'</small>' : '';
+                    if($row->type=='surat-masuk'){
+                        $a['tgl_diterima'] = isset($row->data_field['tanggal_diterima']) && !empty($row->data_field['tanggal_diterima'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_diterima'])).'</small>' :'__';
+                        $a['asal'] = isset($row->data_field['instansi_pengirim']) && !empty($row->data_field['instansi_pengirim'])? '<small>'.$row->data_field['instansi_pengirim'].' <i class="fa fa-angle-right"></i> '.$row->user->unit->title.'</small>' : '<small>* <i class="fa fa-angle-right"></i> '.$row->user->unit->title.'</small>';
+                    }
                     return json_decode(json_encode($a));
             })
             ->addColumn('data_field', function ($row) {
                 $custom = _us( current_module()->datatable->custom_column);
-                return ($custom && !empty($row->data_field) && isset($row->data_field[$custom])) ? '<span class="text-muted">' .$row->data_field[$custom] . '</span>' : '<span class="text-muted">__</span>';
+                if(in_array($row->type,['surat-keluar','surat-masuk'])){
+                    return '<small>'.$row->user->unit->title .' - '.$row->user->unit->parent?->title.'</small>';
+                }else{
+                    return ($custom && !empty($row->data_field) && isset($row->data_field[$custom])) ? '<span class="text-muted">' .$row->data_field[$custom] . '</span>' : '<span class="text-muted">__</span>';
+                }
+
             })
 
             ->addColumn('parents', function ($row) {
-                if (current_module()->form->post_parent):
+                if (current_module()->form->post_parent){
+
                     $custom = _us(current_module()->form->post_parent[0]);
                     return (!empty($row->data_field) && !empty($row->data_field[$custom])) ? '<span class="text-muted">' . $row->data_field[$custom] . '</span>' : '<span class="text-muted">__</span>';
-                else:
+                }else{
                     return '-';
-                endif;
+                }
             })
             ->addColumn('category', function ($row) {
                return $row->category->name ?? '__';
@@ -347,7 +392,13 @@ public function recache($type){
                     $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
                 }
                 if(request()->user()->isAdminKantor()){
-                    $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-masuk' ? 'fa-edit' : 'fa-eye').'"></a>';
+                    if($row->type!='unit'){
+                        $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-masuk' ? 'fa-edit' : 'fa-eye').'"></a>';
+                    }
+                    else{
+                        $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
+                    }
+
                 }
                 if(request()->user()->isOperator()){
                     $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-keluar' ? 'fa-edit' : 'fa-eye').'"></a>';
@@ -355,11 +406,15 @@ public function recache($type){
 
 
                 $btn .= $row->type=='media' ? '<button title="Copy URL media" class="btn btn-sm btn-info fa fa-copy" onclick="copy(\''.route('stream',basename($row->media)).'\')"></button>' : '';
-
+                if(request()->user()->isAdminKantor() && $row->type=='unit'){
+                    $btn .=empty($row->childs_count) && !$row->owned  ? '<button onclick="deleteAlert(\''.route($row->type.'.destroyer',$row->id).'\')" class="btn btn-danger btn-sm fa fa-trash-o"></button>' :'';
+                }
 
                 if((request()->user()->isOperator() && $row->type=='surat-keluar' ) || (request()->user()->isAdmin() && $row->type=='unit' ) || (request()->user()->isAdminKantor() && $row->type=='surat-masuk' )){
 
-                $btn .= Route::has($row->type . '.destroyer') && empty($row->childs_count) ? (!empty($row->data_loop) ? '': '<button onclick="deleteAlert(\''.route($row->type.'.destroyer',$row->id).'\')" class="btn btn-danger btn-sm fa fa-trash-o"></button>' ) :'';
+                    $btn .= Route::has($row->type . '.destroyer') && empty($row->childs_count) && !$row->owned ? (!empty($row->data_loop) ? '': '<button onclick="deleteAlert(\''.route($row->type.'.destroyer',$row->id).'\')" class="btn btn-danger btn-sm fa fa-trash-o"></button>' ) :'';
+
+
                 }
                 $btn .= '</div></div>';
                 return $btn;

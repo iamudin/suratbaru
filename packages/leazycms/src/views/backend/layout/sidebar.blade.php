@@ -54,7 +54,11 @@
                 </li>
             @endforeach
         @endif
-
+@if(Auth::user()->isAdminKantor())
+<li title="Pengguna"><a class="app-menu__item {{ active_item(['user', 'role']) }}"
+    href="{{ route('user') }}"><i class="app-menu__icon fa fa-users"></i> <span
+        class="app-menu__label">Pengguna</span></a></li>
+@endif
         @if ($userprofile->level == 'admin')
             <li class="text-muted" style="padding:12px 10px;font-size:small;background:#000"><i class="fa fa-lock"
                     aria-hidden="true"></i> &nbsp; ADMINISTRATOR</li>
@@ -66,11 +70,12 @@
                     class="app-menu__item {{ Request::is(admin_path() . '/appearance') ? 'active' : '' }}"
                     href="{{ admin_url('appearance') }}"><i class="app-menu__icon fa fa-paint-brush"></i> <span
                         class="app-menu__label">Tampilan</span></a></li>
+                        <li title="Pengguna"><a class="app-menu__item {{ active_item(['user', 'role']) }}"
+                            href="{{ route('user') }}"><i class="app-menu__icon fa fa-users"></i> <span
+                                class="app-menu__label">Pengguna</span></a></li>
             {{-- <li title="Pengguna"><a class="app-menu__item {{ Request::is(admin_path() . '/ekstension') ? 'active' : '' }}" href="{{ admin_url('ekstension') }}"><i class="app-menu__icon fa fa-puzzle-piece"></i> <span class="app-menu__label">Ekstensi</span></a></li> --}}
 
-            <li title="Pengguna"><a class="app-menu__item {{ active_item(['user', 'role']) }}"
-                    href="{{ route('user') }}"><i class="app-menu__icon fa fa-users"></i> <span
-                        class="app-menu__label">Pengguna</span></a></li>
+
             <li title="Pengaturan"><a
                     class="app-menu__item {{ Request::is(admin_path() . '/setting') ? 'active' : '' }}"
                     href="{{ route('setting') }}"><i class="app-menu__icon fa fa-gears"></i> <span

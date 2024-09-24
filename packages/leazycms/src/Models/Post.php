@@ -38,6 +38,10 @@ class Post extends Model
     {
         return $this->hasMany(Visitor::class);
     }
+    public function owned()
+    {
+        return $this->hasOne(User::class,'unit_id','id');
+    }
     public function parent()
     {
         return $this->belongsTo(Post::class, 'parent_id', 'id');

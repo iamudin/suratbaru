@@ -21,7 +21,7 @@ class WebController extends Controller
 
     public function home()
     {
-
+        return to_route('login');
         $hp = get_option('home_page');
 
         if($hp!='default' && View::exists('template.'.template().'.'.str_replace('.blade.php','',$hp))){
