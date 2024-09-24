@@ -157,10 +157,10 @@
                 <div class="card">
                     <p class="card-header"> <i class="fa fa-qrcode" aria-hidden></i> QR Code</p>
                    <img src="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}">
-                   <br>
-                   <a href="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}" download class="btn btn-info btn-sm"> <i class="fa fa-download" aria-hidden></i> Download Qr-Code</a>
-                   <br>
-                    <a href="{{ url('qr_surat/'.$post->keyword) }}" download class="btn btn-success btn-sm"> <i class="fa fa-download" aria-hidden></i> Download Foot Note</a>
+                   <div class="btn-group">
+                   <a href="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}" download class="btn btn-info btn-sm"> <i class="fa fa-download" aria-hidden></i> QR</a>
+                    <a href="{{ url('qr_surat/'.$post->keyword) }}" download class="btn btn-success btn-sm"> <i class="fa fa-download" aria-hidden></i> Footnote</a>
+                </div>
                 </div>
 
             @endif
