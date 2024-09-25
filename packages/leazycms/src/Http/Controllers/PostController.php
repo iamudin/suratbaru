@@ -66,6 +66,7 @@ if($request->user()->isAdmin()){
     }
 }else{
     $data = $post->whereBelongsTo($request->user())->with('category','user')->whereType(get_post_type())->find($id);
+
     if(get_post_type()=='surat-masuk'){
     $data = $post->with('category','user')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $request->user()->unit->title.' - '.$request->user()->unit->parent->title)->find($id);
 
@@ -92,7 +93,6 @@ return view('cms::backend.posts.form',[
         'looping_data'=>$looping_data,
         'field'=>$field,
         'module'=> $module,
-        'tags'=> Tag::get(),
         'category'=> $module->form->category ? Category::query()->whereType(get_post_type())->select('id','name')->orderBy('sort')->get() : null
 ]);
 }
