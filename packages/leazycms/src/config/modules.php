@@ -80,7 +80,7 @@ return [
                     ['Butuh Dibalas',['Ya','Tidak'],'required'],
                     ['Surat ini akan diteruskan/ditujukan/didisposisi ke ?','break'],
                     ['Tujuan Surat','tujuan_surat'],
-                    ['Catatan','textarea'],
+                    ['Catatan Disposisi','textarea'],
                     )
             ],
             'web'=>[
