@@ -337,6 +337,24 @@ public function recache($type){
             ->addColumn('created_at', function ($row) {
                 return '<small class="badge text-muted">' . date('d-m-Y H:i:s', strtotime($row->created_at)) . '</small>';
             })
+            ->addColumn('butuh_balas', function ($row) {
+
+                if($row->type=='surat-masuk' && isset($row->data_field['butuh_dibalas']) && !empty($row->data_field['butuh_dibalas'])){
+                if($row->data_field['butuh_dibalas']=='Iya'){
+                    if(!empty($row->child)){
+                        return '<small class="badge badge-success">Sudah <i class="fa fa-check"></i></small>';
+                    }else{
+                        return '<small class="badge badge-danger">Belum <i class="fa fa-close"></i></small>';
+
+                    }
+                }else{
+                    return '<small class="badge badge-dark">Tidak</small>';
+
+                }
+
+            }
+
+            })
             ->addColumn('visitors_count', function ($row) {
                 return '<center><small class="badge text-muted"> <i class="fa fa-line-chart"></i> <b>' . $row->visitors_count . '</b></small></center>';
             })
@@ -354,7 +372,18 @@ public function recache($type){
                     $a['diterbitkan'] = isset($df['diterbitkan']) && !empty($df['diterbitkan'])? '<small class="badge badge-success">'.date('d M Y',strtotime($df['diterbitkan'])).'</small>' : '';
                     if($row->type=='surat-masuk'){
                         $a['tgl_diterima'] = isset($row->data_field['tanggal_diterima']) && !empty($row->data_field['tanggal_diterima'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_diterima'])).'</small>' :'__';
-                        $a['asal'] = isset($row->data_field['instansi_pengirim']) && !empty($row->data_field['instansi_pengirim'])? '<small>'.$row->data_field['instansi_pengirim'].' <i class="fa fa-angle-right"></i> '.$row->user->unit->title.'</small>' : '<small>* <i class="fa fa-angle-right"></i> '.$row->user->unit->title.'</small>';
+                        $a['tgl_surat'] = isset($row->data_field['tanggal_surat']) && !empty($row->data_field['tanggal_surat'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_surat'])).'</small>' :'__';
+
+                        $a['asal'] = isset($row->data_field['instansi_pengirim']) && !empty($row->data_field['instansi_pengirim'])? '<small>'.$row->data_field['instansi_pengirim'].'</small>' : '<small class="text-muted">__</small>';
+                        $a['disposisi'] = isset($row->data_field['tujuan_surat']) && !empty($row->data_field['tujuan_surat'])? '<small>'.$row->data_field['tujuan_surat'].'</small>' : '<small class="text-muted">__</small>';
+                    }
+                    if($row->type=='surat-keluar'){
+                        $a['tujuan'] = '<small>'.(isset($df['tujuan']) && !empty($df['tujuan']) ? $df['tujuan'] : 'Internal').'</small>';
+
+                    }
+                    if($row->type=='surat-masuk'){
+                    $a['perihal'] = '<small>'.(isset($df['hal']) && !empty($df['hal']) ? $df['hal'] : '__').'</small>';
+
                     }
                     return json_decode(json_encode($a));
             })
@@ -384,9 +413,12 @@ public function recache($type){
             ->addColumn('action', function ($row) {
 
                 $btn = '<div style="text-align:right"><div class="btn-group ">';
-                if(!empty($row->data_field['arsipkan_surat_yang_sudah_tte'])){
+                if($row->type=='surat-keluar' && !empty($row->data_field['arsipkan_surat_yang_sudah_tte'])){
                 $btn .= '<a class="btn btn-success btn-sm fa fa-envelope" href="'.$row->data_field['arsipkan_surat_yang_sudah_tte'].'" title="Lihat Arsip Surat"></a>';
                 }
+                if($row->type=='surat-masuk' && !empty($row->data_field['file_surat'])){
+                    $btn .= '<a class="btn btn-success btn-sm fa fa-envelope" href="'.$row->data_field['file_surat'].'" title="Lihat Arsip Surat"></a>';
+                    }
                 $btn .= current_module()->web->detail && $row->status=='publish' ? '<a target="_blank" href="' .url($row->url.'/').'"  class="btn btn-info btn-sm fa fa-globe"></a>':'';
                 if(request()->user()->isAdmin()){
                     $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
@@ -419,11 +451,11 @@ public function recache($type){
                 $btn .= '</div></div>';
                 return $btn;
             })
-            ->rawColumns(['created_at','ext_column','category', 'updated_at', 'visitors_count', 'action', 'title', 'data_field', 'parents', 'thumbnail'])
+            ->rawColumns(['created_at','butuh_balas','ext_column','category', 'updated_at', 'visitors_count', 'action', 'title', 'data_field', 'parents', 'thumbnail'])
             ->orderColumn('visitors_count', '-visited $1')
             ->orderColumn('updated_at', '-updated_at $1')
             ->orderColumn('created_at', '-created_at $1')
-            ->only(['visitors_count', 'ext_column','action', 'category','title', 'created_at', 'updated_at', 'data_field', 'parents', 'thumbnail'])
+            ->only(['visitors_count','butuh_balas', 'ext_column','action', 'category','title', 'created_at', 'updated_at', 'data_field', 'parents', 'thumbnail'])
             ->filterColumn('title', function ($query, $keyword) {
                 $query->whereRaw("CONCAT(posts.title,'-',posts.title) like ?", ["%{$keyword}%"]);
             })

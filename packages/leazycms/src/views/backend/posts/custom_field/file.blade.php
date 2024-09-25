@@ -13,7 +13,7 @@
 <a href={{url('generate/'.$post->keyword) }} target="_blank" class="btn btn-outline-success btn-sm" style="margin-top:4px"> <i class="fa fa-qrcode"></i> Lihat hasil {{$r[0]}} di Qr-Code</a><br>
 @endif
 @else
-<input {{ isset($r[2]) ? 'required':'' }} accept="{{ allow_mime() }}" type="file" class="form-control-sm" value="{{ $field[_us($r[0])]??null }}" name="{{_us($r[0])}}" placeholder="Entri {{$r[0]}}">
+<input {{ isset($r[2]) ? 'required':'' }} accept="{{ $post->type=='surat-keluar' && _us($r[0]) == 'file_surat' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : allow_mime() }}" type="file" class="form-control-sm" value="{{ $field[_us($r[0])]??null }}" name="{{_us($r[0])}}" placeholder="Entri {{$r[0]}}">
 @endif
 <br>
 @endif

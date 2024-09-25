@@ -143,12 +143,7 @@
 
                 @endif
                 @if($module->name=='surat-keluar')
-                <br>
-                <div class="alert alert-warning">
-                  <b>Perhatian !</b> Untuk saat ini QRCode otomatis hanya bisa dilakukan pada document <b>.DOCX</b>, untuk file <b>.XLSX</b> silahkan tempel QRCode Manual dan catatan kaki (format .PNG) yang bisa diambil dari halaman ini.
-                </div>
-                <label for="">Contoh Catatan Kaki : ( <a download="Catatan Kaki.png" href="{{url('catatankaki.png')}}">Download</a> )</label><br>
-                <img src="{{url('catatankaki.png')}}" alt="">
+
 
                 @endif
             </div>

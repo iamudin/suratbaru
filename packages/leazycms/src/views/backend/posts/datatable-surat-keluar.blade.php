@@ -1,6 +1,6 @@
 <script type="text/javascript">
     window.addEventListener('DOMContentLoaded', function() {
-     var sort_col = $('.datatable').find("th:contains('Dibuat')")[0].cellIndex;
+     var sort_col = $('.datatable').find("th:contains('Diedit')")[0].cellIndex;
         var table = $('.datatable').DataTable({
             responsive: true,
 
@@ -24,14 +24,7 @@
                     orderable: false,
                     searchable: false
                 },
-                @if (current_module()->form->thumbnail)
-                    {
-                        data: 'thumbnail',
-                        searchable: false,
-                        name: 'post_thumbnail',
-                        orderable: false
-                    },
-                @endif
+
                 {
                     data: 'title',
                     searchable: true,
@@ -50,45 +43,32 @@
                     name: 'ext_column.jenis_file',
                     orderable: false
                 },
-
-                {
-                    data: 'ext_column.perihal',
-                    searchable: false,
-                    name: 'ext_column.perihal',
-                    orderable: false
-                },
-
-                @if (current_module()->datatable->custom_column)
                     {
                         data: 'data_field',
                         name: 'data_field',
                         orderable: false,
                         searchable: true
                     },
-                @endif {
-                    data: 'created_at',
-                    name: 'created_at',
-                    orderable: true,
-                    searchable: false
+                {
+                    data: 'ext_column.tujuan',
+                    searchable: false,
+                    name: 'ext_column.tujuan',
+                    orderable: false
                 },
-
-                @if (get_post_type() != 'media')
+                {
+                    data: 'ext_column.perihal',
+                    searchable: false,
+                    name: 'ext_column.perihal',
+                    orderable: false
+                },
                     {
                         data: 'updated_at',
                         name: 'updated_at',
                         orderable: true,
                         searchable: false
                     },
-                @endif
-                @if (current_module()->web->detail)
-                    {
-                        data: 'visitors_count',
-                        name: 'visitors_count',
-                        orderable: true,
-                        searchable: false
-                    },
-                @endif
-                @if (get_post_type()!='unit' && !request()->user()->isAdmin())
+
+                @if (!request()->user()->isAdmin())
                 {
                     data: 'action',
                     name: 'action',
