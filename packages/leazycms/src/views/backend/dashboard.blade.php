@@ -68,7 +68,7 @@
         <td><code>{{ $row->created_at->diffForHumans() }}</code></td>
         <td>{{ str($row->type)->headline() }}</td>
         <td><span class="text-primary">{{$row->title }}</span></td>
-        <td>{{ $row->type=='surat-keluar' ? $row->field?->perihal : $row->field?->perihal}}</td>
+        <td>{{ $row->type=='surat-keluar' ? $row->field?->perihal : $row->field?->hal}}</td>
         <td><small>{{ $row->user->name }} | {{ str($row->user->level)->headline()}} {{ $row->user->unit->title }} {{ $row->user->unit->parent ? ' | '.$row->user->unit->parent->title : '' }}</small></td>
         <td>{!! $row->status == 'draft' ? '<badge class="badge badge-warning">Draft</badge>' : '<badge class="badge badge-success">Publish</badge>' !!}</td>
     </tr>
