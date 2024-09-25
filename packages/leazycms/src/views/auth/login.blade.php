@@ -10,9 +10,9 @@
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Masuk - {{get_option('site_title')}}</title>
-    <link rel="shortcut icon" href="{{url(get_option('favicon') ?? noimage())}}" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <meta property="og:title" content="Masuk - {{get_option('site_title')?? 'Web Title'}}" />
-<meta property="og:image" content="{{url(get_option('logo')??noimage())}}" />
+<meta property="og:image" content="{{url(get_option('icon')??noimage())}}" />
 <meta property="og:site_name" content="{{get_option('site_title') ?? 'Web Title'}}" />
 <meta property="og:description" content="Masuk Sebagai Admin / Operator" />
   </head>
