@@ -57,7 +57,7 @@ if($request->user()->isAdmin()){
    $data=  $post->with('category','user')->whereType(get_post_type())->find($id) ;
 }elseif($request->user()->isAdminKantor()){
     $data = $post->withWhereHas('user',function($q)use($request){
-        $q->whereIn('unit_id',array_merge($request->user()->unit->childs->pluck('id')->toArray(),[$request->user()->id]));
+        $q->whereIn('unit_id',array_merge($request->user()->unit->childs->pluck('id')->toArray(),[$request->user()->unit_id]));
     })->with('category','user')->whereType(get_post_type())->find($id);
 
     if(get_post_type()=='unit'){
