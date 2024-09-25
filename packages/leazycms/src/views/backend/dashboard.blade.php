@@ -6,7 +6,18 @@
 
     @if(!Auth::user()->isAdmin())
     <div class="alert alert-info">
-        <h3> Selamat Datang di E-Surat Kabupaten Bengkalis</h3>  Anda login sebagai : <strong> <i class="fa fa-user"></i> {{ str(Auth::user()->level)->headline() }} | {{ Auth::user()->unit->title }} {{ Auth::user()->unit->parent ? ' | '.Auth::user()->unit->parent->title : '' }}</strong>
+        <h3> Selamat Datang di E-Surat Kabupaten Bengkalis v.2 (beta)</h3>  Anda login sebagai : <strong> <i class="fa fa-user"></i> {{ str(Auth::user()->level)->headline() }} | {{ Auth::user()->unit->title }} {{ Auth::user()->unit->parent ? ' | '.Auth::user()->unit->parent->title : '' }}</strong>
+        <hr>
+        @if(Auth::user()->isAdminKantor())
+
+        @endif
+        @if(Auth::user()->isOperator())
+        <p class="text-danger">
+            <strong>Diinformasikan bahwa data surat yang ada sebelumnya akan di pulihkan kembali dalam waktu 3x24 jam. Silahkan tetap menginput data surat keluar saat ini.</strong><br><br>
+            Catatan :<br>
+            - Data surat masuk hanya bisa dinput oleh Admin Kantor / Instansi .
+        </p>
+        @endif
     </div>
     @endif
 
