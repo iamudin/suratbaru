@@ -278,19 +278,19 @@ public function recache($type){
     {
         if($req->user()->isAdmin()){
 
-            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type());
+            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('user', 'category')->withCount('childs')->whereType(get_post_type());
             if(get_post_type()!='unit'){
                 $data = $data->published();
             }
         }elseif($req->user()->isAdminKantor()){
 
 
-            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->withWhereHas('user',function($q)use($req){
+            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->whereType(get_post_type())->withWhereHas('user',function($q)use($req){
                 $q->whereIn('unit_id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
             });
 
             if(get_post_type()=='unit'){
-                $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category','user')->withCount('childs')->withCount('visitors')->whereType(get_post_type())
+                $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category','user')->withCount('childs')->whereType(get_post_type())
                 ->where('user_id',$req->user()->id)->orWhereIn('id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
 
             }
@@ -300,10 +300,10 @@ public function recache($type){
 
 
         }else{
-            $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereBelongsTo($req->user());
+            $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->whereBelongsTo($req->user());
 
             if (get_post_type() =='surat-masuk') {
-                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $req->user()->unit->title.' - '.$req->user()->unit->parent->title)->published();
+                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $req->user()->unit->title.' - '.$req->user()->unit->parent->title)->published();
             }
         }
 
@@ -355,9 +355,7 @@ public function recache($type){
             }
 
             })
-            ->addColumn('visitors_count', function ($row) {
-                return '<center><small class="badge text-muted"> <i class="fa fa-line-chart"></i> <b>' . $row->visitors_count . '</b></small></center>';
-            })
+
             ->addColumn('updated_at', function ($row) {
                 return ($row->updated_at) ? '<small class="badge text-muted">' . date('d-m-Y H:i:s', strtotime($row->updated_at)) . '</small>' : '<small class="badge text-muted">NULL</small>';
             })
@@ -452,7 +450,6 @@ public function recache($type){
                 return $btn;
             })
             ->rawColumns(['created_at','butuh_balas','ext_column','category', 'updated_at', 'visitors_count', 'action', 'title', 'data_field', 'parents', 'thumbnail'])
-            ->orderColumn('visitors_count', '-visited $1')
             ->orderColumn('updated_at', '-updated_at $1')
             ->orderColumn('created_at', '-created_at $1')
             ->only(['visitors_count','butuh_balas', 'ext_column','action', 'category','title', 'created_at', 'updated_at', 'data_field', 'parents', 'thumbnail'])
