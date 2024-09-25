@@ -30,10 +30,11 @@ return [
                     ['Instansi','text','required'],
                     ['Alamat','text','required'],
                     ['Penandatangan','text','required'],
+                    ['Instansi Tujuan','text','required'],
                     ['Diterbitkan','date','required'],
                     ['Arsipkan Surat yang Sudah TTE','file'],
-                    ['Tujuan Surat. Dikosongkan utk Internal / Bisa di isi dengan : Nama OPD / Nama Instansi  (Bersifat Opsional)','break'],
-                    ['Tujuan','text'],
+                    ['Tujuan Surat Keluar','tujuan_surat_keluar'],
+                    ['Status Tujuan Surat','status_tujuan_surat_keluar'],
                     )
             ],
             'web'=>[

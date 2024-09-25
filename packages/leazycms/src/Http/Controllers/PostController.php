@@ -195,7 +195,7 @@ public function update(Request $request, Post $post){
                 $post->addFile(['file'=>$request->file($fieldname),'purpose'=>$fieldname,'mime_type'=>explode(',',allow_mime())]) : strip_tags($request->$fieldname);
             break;
             default:
-                $custom_field[$fieldname] = strip_tags($request->$fieldname) ?? null;
+                $custom_field[$fieldname] = strip_tags(trim($request->$fieldname)) ?? null;
             break;
         }
     }
@@ -378,7 +378,7 @@ public function recache($type){
                         $a['disposisi'] = isset($row->data_field['tujuan_surat']) && !empty($row->data_field['tujuan_surat'])? '<small>'.$row->data_field['tujuan_surat'].'</small>' : '<small class="text-muted">__</small>';
                     }
                     if($row->type=='surat-keluar'){
-                        $a['tujuan'] = '<small>'.(isset($df['tujuan']) && !empty($df['tujuan']) ? $df['tujuan'] : 'Internal').'</small>';
+                        $a['tujuan'] = '<small>'.(isset($df['instansi_tujuan']) && !empty($df['instansi_tujuan']) ? $df['instansi_tujuan'] : 'Internal').'</small>';
 
                     }
                     if($row->type=='surat-masuk'){

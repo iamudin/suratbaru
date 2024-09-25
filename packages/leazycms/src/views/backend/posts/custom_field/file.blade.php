@@ -1,5 +1,13 @@
 @if(!Auth::user()->isOperator() && $post->type=='surat-keluar')
+@php $key = _us($r[0]) @endphp
 
+<small for="{{_us($r[0])}}">File Surat</small><br>
+@if(isset($field[_us($r[0])]) && media_exists($post->field->$key))
+<a href={{asset($field[_us($r[0])]) }} class="btn btn-outline-info btn-sm" style="margin-top:4px">Lihat {{$r[0]}} (.{{ str(get_ext($field[_us($r[0])]))->upper() }})</a>
+@else
+<small><i class="text-danger">Belum ada</i></small>
+@endif
+<br>
 @else
 <small for="{{_us($r[0])}}">{{$r[0]}} </small><br>
 @php $key = _us($r[0]) @endphp
