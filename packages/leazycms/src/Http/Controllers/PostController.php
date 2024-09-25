@@ -340,7 +340,7 @@ public function recache($type){
             ->addColumn('butuh_balas', function ($row) {
 
                 if($row->type=='surat-masuk' && isset($row->data_field['butuh_dibalas']) && !empty($row->data_field['butuh_dibalas'])){
-                if($row->data_field['butuh_dibalas']=='Iya'){
+                if($row->data_field['butuh_dibalas']=='Ya'){
                     if(!empty($row->child)){
                         return '<small class="badge badge-success">Sudah <i class="fa fa-check"></i></small>';
                     }else{

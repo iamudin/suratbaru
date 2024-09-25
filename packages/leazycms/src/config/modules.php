@@ -77,9 +77,10 @@ return [
                     ['Tanggal Surat','date','required'],
                     ['Hal','text','required'],
                     ['Tanggal Diterima','date','required'],
-                    ['Butuh Dibalas',['Iya','Tidak'],'required'],
-                    ['Surat ini akan diteruskan/ditujukan ke ?','break'],
+                    ['Butuh Dibalas',['Ya','Tidak'],'required'],
+                    ['Surat ini akan diteruskan/ditujukan/didisposisi ke ?','break'],
                     ['Tujuan Surat','tujuan_surat'],
+                    ['Catatan','textarea'],
                     )
             ],
             'web'=>[
