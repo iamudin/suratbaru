@@ -46,8 +46,8 @@
   <thead><tr>
     <th width="150px">Waktu</th>
     <th>Jenis Data</th>
-    <th>Jenis Surat</th>
     <th>Nomor Surat</th>
+    <th>Hal</th>
     <th>Pembuat</th>
     <th  width="50px">Status</th>
   </tr></thead>
@@ -56,8 +56,8 @@
     <tr>
         <td><code>{{ $row->created_at->diffForHumans() }}</code></td>
         <td>{{ str($row->type)->headline() }}</td>
-        <td>Nota Dinas</td>
         <td><span class="text-primary">{{$row->title }}</span></td>
+        <td>{{ $row->field->perihal }}</td>
         <td><small>{{ $row->user->name }} | {{ str($row->user->level)->headline()}} {{ $row->user->unit->title }} {{ $row->user->unit->parent ? ' | '.$row->user->unit->parent->title : '' }}</small></td>
         <td>{!! $row->status == 'draft' ? '<badge class="badge badge-warning">Draft</badge>' : '<badge class="badge badge-success">Publish</badge>' !!}</td>
     </tr>
@@ -68,7 +68,35 @@
 </div>
 </div>
 
+@if(Auth::user()->isAdmin())
+    <div class="col-lg-12 mb-3">
+        <div class="card" style="padding:15px">
+        <h4 for="" style="margin-bottom:20px"><i class="fa fa-history" aria-hidden="true"></i> 5 User Login Terbaru</h4>
+        <div class="table-responsive">
+          <table class="table" style="font-size:small">
+        <thead><tr>
+          <th width="150px">Waktu</th>
+          <th>IP</th>
+          <th>Unit</th>
+          <th>Nama User</th>
+        </tr>
+    </thead>
+        <tbody>
+          @foreach(\Leazycms\Web\Models\User::with('unit.parent')->whereIn('level',['AdminKantor','operator'])->latest('updated_at')->get() as $row)
+          <tr>
+              <td><code>{{ $row->last_login_at}}</code></td>
+              <td><code>{{ $row->last_login_ip}}</code></td>
+              <td><span class="text-primary">{{$row->unit->title}} {{ $row->unit->parent ? ' - '.$row->unit->parent->title : '' }}</span></td>
+              <td><code>{{ $row->name}}</code></td>
 
+          </tr>
+          @endforeach
+        </tbody>
+        </table>
+        </div>
+      </div>
+      </div>
+@endif
 <script type="text/javascript">
           window.addEventListener('DOMContentLoaded', function() {
       /*  var sort_col = $('.datatable').find("th:contains('Time')")[0].cellIndex;*/

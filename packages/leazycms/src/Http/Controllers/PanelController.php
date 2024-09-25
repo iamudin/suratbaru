@@ -43,11 +43,11 @@ class PanelController extends Controller implements HasMiddleware
         $weekago = json_decode(json_encode(collect($da)->sort()), true);
         $type = collect(get_module())->where('name', '!=', 'media')->pluck('name')->toArray();
         if($user->isAdmin()){
-            $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title'])->with('user.unit.parent')->whereIn('type', ['surat-keluar','surat-masuk'])->latest('created_at')->published()->limit(5)->get();
+            $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title','data_field'])->with('user.unit.parent')->whereIn('type', ['surat-keluar','surat-masuk'])->latest('created_at')->published()->limit(5)->get();
             $post = Post::select('type')->published()->get();
         }elseif($user->level == 'AdminKantor'){
 
-            $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title'])->withWhereHas('user',function($q)use($user){
+            $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title','data_field'])->withWhereHas('user',function($q)use($user){
                 $q->with('unit.parent')->whereIn('unit_id',$user->unit->childs->pluck('id')->toArray());
             })->whereIn('type', ['surat-keluar','surat-masuk'])->published()->latest('created_at')->limit(5)->get();
             $post = Post::select('type')->whereHas('user',function($q)use($user){
@@ -56,7 +56,7 @@ class PanelController extends Controller implements HasMiddleware
 
 
         }else{
-            $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title'])->with('user.unit.parent')->whereUserId($user->id)->whereIn('type', ['surat-keluar','surat-masuk'])->latest('created_at')->limit(5)->get();
+            $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title','data_field'])->with('user.unit.parent')->whereUserId($user->id)->whereIn('type', ['surat-keluar','surat-masuk'])->latest('created_at')->limit(5)->published()->get();
             $post = Post::select('type')->whereUserId($user->id)->orWhereJsonContains('data_field->tujuan_surat', $user->unit->title.' - '.$user->unit->parent->title)->published()->get();
             // if (get_post_type() =='surat-masuk') {
             //     $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $req->user()->unit->title.' - '.$req->user()->unit->parent->title)->published();
