@@ -144,6 +144,9 @@ public function store(Request $request){
     return to_route('user.edit',$data->id)->with('success','User berhasil ditambah');
 }
 public function edit(User $user){
+    if(!in_array($user->unit->id,request()->user()->unit->childs->pluck('id')->toArray())){
+        return to_route('user')->with('danger','User tidak ditemukan');
+    }
     return view('cms::backend.users.form',['user'=>$user]);
 }
 public function update(Request $request, User $user){
