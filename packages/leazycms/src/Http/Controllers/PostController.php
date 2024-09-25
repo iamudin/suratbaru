@@ -65,7 +65,7 @@ if($request->user()->isAdmin()){
         ->where('user_id',$request->user()->id)->orWhereIn('id',array_merge($request->user()->unit->childs->pluck('id')->toArray(),[$request->user()->unit->id]))->find($id);
     }
 }else{
-    $data = $post->whereBelongsTo($request->user())->with('category','user')->whereType(get_post_type())->find($id);
+    $data = $post->whereBelongsTo($request->user())->with('category','user.unit.parent')->whereType(get_post_type())->find($id);
 
     if(get_post_type()=='surat-masuk'){
     $data = $post->with('category','user')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $request->user()->unit->title.' - '.$request->user()->unit->parent->title)->find($id);
