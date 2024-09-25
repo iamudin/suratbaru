@@ -373,9 +373,9 @@ public function recache($type){
                     if($row->type=='surat-masuk'){
                         $a['tgl_diterima'] = isset($row->data_field['tanggal_diterima']) && !empty($row->data_field['tanggal_diterima'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_diterima'])).'</small>' :'__';
                         $a['tgl_surat'] = isset($row->data_field['tanggal_surat']) && !empty($row->data_field['tanggal_surat'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_surat'])).'</small>' :'__';
-
+                        $catatan = isset($row->data_field['catatan_disposisi']) && !empty($row->data_field['catatan_disposisi']) ? '<small class="text-danger"><br>Catatan : <br><i>'.$row->data_field['catatan_disposisi'].'</i></small>' : '';
                         $a['asal'] = isset($row->data_field['instansi_pengirim']) && !empty($row->data_field['instansi_pengirim'])? '<small>'.$row->data_field['instansi_pengirim'].'</small>' : '<small class="text-muted">__</small>';
-                        $a['disposisi'] = isset($row->data_field['tujuan_surat']) && !empty($row->data_field['tujuan_surat'])? '<small>'.$row->data_field['tujuan_surat'].'</small>' : '<small class="text-muted">__</small>';
+                        $a['disposisi'] = isset($row->data_field['tujuan_surat']) && !empty($row->data_field['tujuan_surat'])? '<small>'.$row->data_field['tujuan_surat'].'</small>'. $catatan : '<small class="text-muted">__</small>';
                     }
                     if($row->type=='surat-keluar'){
                         $a['tujuan'] = '<small>'.(isset($df['instansi_tujuan']) && !empty($df['instansi_tujuan']) ? $df['instansi_tujuan'] : 'Internal').'</small>';
