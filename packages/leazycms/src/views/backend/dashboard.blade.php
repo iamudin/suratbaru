@@ -82,7 +82,7 @@
         </tr>
     </thead>
         <tbody>
-          @foreach(\Leazycms\Web\Models\User::with('unit.parent')->whereIn('level',['AdminKantor','operator'])->latest('updated_at')->get() as $row)
+          @foreach(\Leazycms\Web\Models\User::with('unit.parent')->whereIn('level',['AdminKantor','operator'])->latest('last_login_at')->limit('5')->get() as $row)
           <tr>
               <td><code>{{ $row->last_login_at}}</code></td>
               <td><code>{{ $row->last_login_ip}}</code></td>
