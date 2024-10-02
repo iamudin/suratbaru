@@ -11,7 +11,7 @@ use Leazycms\FLC\Traits\Commentable;
 class Post extends Model
 {
     use SoftDeletes,Fileable,Commentable;
-    public $selected = ['id','description','short_content','type','category_id','user_id','title','created_at','updated_at','parent_id','media','media_description','url','slug','data_field','pinned','sort','status','mime'];
+    public $selected = ['id','description','short_content','type','category_id','user_id','title','created_at','updated_at','parent_id','media','media_description','url','slug','data_field','pinned','sort','status','mime','redirect_to'];
 
     protected $userselectcolumn = ['id','name','url','unit_id','level'];
     protected $categoryselectcolumn = ['id','name','url','slug'];
@@ -45,6 +45,10 @@ class Post extends Model
     public function parent()
     {
         return $this->belongsTo(Post::class, 'parent_id', 'id');
+    }
+    public function penerima_surat_masuk()
+    {
+        return $this->belongsTo(Post::class, 'redirect_to', 'id')->select('id','title');
     }
     public function category()
     {

@@ -484,7 +484,7 @@ if (!function_exists('get_option')) {
 if (!function_exists('admin_path')) {
     function admin_path()
     {
-        return get_option('admin_path') ?? 'admin';;
+        return '';
     }
 }
 

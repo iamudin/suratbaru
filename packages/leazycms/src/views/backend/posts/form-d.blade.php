@@ -21,18 +21,9 @@
                             class="pointer copy pull-right badge badge-primary" data-copy="{{ url($post->url) }}"><i
                                 class="fa fa-copy" aria-hidden></i> <b>Salin</b></span></div>
                 @endif
-
-                @if ($post->status=='publish' && get_post_type() == 'surat-keluar')
-                <div style="border-left:3px solid green" class="alert alert-success"><b>URL : </b><a
-                        title="Kunjungi URL" data-toggle="tooltip" href="{{ url('surat-keluar/'.$post->keyword) }}"
-                        target="_blank"><i><u>{{ url('surat-keluar/'.$post->keyword) }}</u></i></a> <span
-                        title="Klik Untuk Menyalin alamat URL {{ $module->title }}" data-toggle="tooltip"
-                        class="pointer copy pull-right badge badge-primary" data-copy="{{ url('surat-keluar/'.$post->keyword) }}"><i
-                            class="fa fa-copy" aria-hidden></i> <b>Salin</b></span></div>
-            @endif
                 @include('cms::backend.layout.error')
             </div>
-            <div class="col-lg-9 pb-4">
+            <div class="col-lg-9">
                 <div class="form-group">
                     <input data-toggle="tooltip" title="Masukkan {{ $module->datatable->data_title }}" required
                         name="title" type="text" value="{{ $post->title ?? '' }}"
@@ -57,6 +48,7 @@
                     <?php
                     if (isset($pp[1])) {
                         if (isset($pp[2]) && $pp[2] != 'all') {
+                            // echo "<script>alert('oi');</script>";
                             $par = Leazycms\Web\Models\Post::withwherehas('category', function ($q) {
                                 $q->where('slug', $pp[2]);
                             })
@@ -66,45 +58,14 @@
                                 ->get();
                         } else {
                             $par = Leazycms\Web\Models\Post::whereType($pp[1])
-                                ->whereNotIn('id',[$post->id]);
-                            if($post->type=='unit'){
-                               $par = $par->wherePinned('Y');
-                            }
-                            if($post->type=='surat-keluar' && Auth::user()->isOperator()){
-
-                                    $par = $par->where('redirect_to', Auth::user()->unit->id);
-
-
-                            }
-                               $par =  $par->select('id', 'title','parent_id')->published();
-                               if(Auth::user()->isAdminKantor() && $post->type=='surat-keluar'){
-                                $par =  $par->whereId($post->parent_id)->first();
-                               }else{
-                                $par =  $par->get();
-                               }
+                                ->whereStatus('publish')
+                                ->select('id', 'title')
+                                ->get();
                         }
                     }
                     ?>
-                     @if(Auth::user()->isAdminKantor() && $post->type=='unit')
-                    <input type="hidden" name="parent_id" value="{{ Auth::user()->unit->id == $post->id ? null :  Auth::user()->unit->id }}">
-                     @endif
-                    @if(Auth::user()->isAdminKantor() && $post->type=='surat-keluar')
                     <h6>{{ $pp[0] }}</h6>
-                    @if($par)
-                    <a  href="/panel/surat-masuk/{{ $par->id }}/edit" target="_blank" class="btn btn-sm btn-success "> <i class="fa fa-eye"></i> {{ $par->field->arsipkan_surat_yang_sudah_tte }}</a><br>
-                    @else
-                    <span class="badge badge-danger"> <i class="fa fa-close"></i> Tidak Ada Referensi Surat</span><br>
-                    @endif
-
-                    @endif
-                    @if((!Auth::user()->isAdminKantor() && $post->type=='surat-keluar') || Auth::user()->isAdmin() && $post->type=='unit')
-
-                    <h6>{{ $pp[0] }}  <small id="refsurat" style="cursor:pointer;display:none" href="" class="badge badge-success"> <i class="fa fa-eye"></i> Lihat Surat</small></h6>
                     <select @if (isset($pp[3]) && $pp[3] == 'required') required @endif class="form-control form-control-sm"
-                    @if($post->type=='surat-keluar')
-                    onchange="if(this.value) {ceksurat(this.value)}"
-                    @endif
-
                         name="parent_id">
                         <option value="">--pilih--</option>
 
@@ -114,55 +75,12 @@
                         @endforeach
 
                     </select>
-                    @push('scripts')
-                    <script>
-                        function ceksurat(id) {
-                            let formData = new FormData();
-                            formData.append('post_id', id);
 
-                            $.ajax({
-                                url: '{{ url('cek_surat') }}',
-                                method: 'POST',
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                success: function(response) {
-                                    window.open(response.file,'_blank','width=600,height=400,scrollbars=yes,resizable=yes');
-                                },
-                                error: function(error) {
-                                    console.log('Error uploading file:', error);
-                                }
-                            });
-                        }
-                        </script>
-                    @endpush
-                    @endif
                 @endif
+
                 @if ($module->form->custom_field)
                     @include('cms::backend.posts.custom_field.form')
 
-                @endif
-                @if($module->name=='surat-masuk')
-                <br>
-                <h6 for="" class="border-bottom">Disposisi Surat</h6>
-                @php
-                $tujuan = query()->onType('unit')->select('id','title','user_id','parent_id')->where('id',Auth::user()->unit->id)->with('childs')->get()
-                @endphp
-                <small>Tujukan surat ini ke :</small>
-                <select name="disposisi_ke" class="form-control form-control-sm" id="">
-                    <option value="">--pilih--</option>
-                    @foreach($tujuan as $row)
-                    <option {{ $post->redirect_to==$row->id ? 'selected':'' }} value="{{ $row->id }}">{{ $row->title }}</option>
-                    @foreach($row->childs as $row2)
-                    <option {{ $post->redirect_to==$row2->id ? 'selected':'' }}  value="{{ $row2->id }}">{{ $row2->title }} - {{ $row->title }}</option>
-                    @endforeach
-                    @endforeach
-                </select>
-                <small>Catatan:</small>
-                <textarea name="catatan_disposisi" id="" cols="10" rows="2" class="form-control" style="font-size:small">{{ $post->description }}</textarea>
                 @endif
                 @if ($module->form->looping_data)
                 @include('cms::backend.posts.looping_data.form')
@@ -185,59 +103,8 @@
                     @endif
 
                 @endif
-
             </div>
             <div class="col-lg-3">
-                @if ($module->name == 'surat-keluar')
-                <div class="card alert-warning p-3 border" >
-
-                        <input id="myFile" type="file" class="pilihsurat" onchange="submitFile()" style="display: none" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document" name="file_docx" class="form-control form-control-file" id="">
-                       Pembubuhan QR Code Pada Surat dapat dilakukan Secara otomatis. Berlaku hanya untuk format file <b>.DOCX</b> dan jika hasil tidak sesuai, silahkan unduh dan bubuhkan QR code secara manual.
-                       <hr>
-                            <div class="btn-group"><button  onclick="$('.pilihsurat').click()" class="btn btn-sm btn-warning btnpilih" type="button">Pilih Dokumen</button>@if($post->files->where('purpose','qr-to-docx')->count()) <button onclick="window.open('{{ url('generate/'.$post->keyword) }}','_blank','width=600,height=400,scrollbars=yes,resizable=yes')" class="btn btn-sm btn-success" type="button">Lihat hasil</button>  @endif</div>
-
-                </div>
-                @push('scripts')
-                <script>
-                    function submitFile() {
-                        $('.btnpilih').html('Sedang proses...');
-                        const fileInput = $('#myFile')[0].files[0];
-                        let formData = new FormData();
-                        formData.append('file', fileInput);
-                        formData.append('post_id', '{{ $post->id }}');
-
-                        $.ajax({
-                            url: '{{ url('upload_docx') }}',
-                            method: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function(response) {
-                                $('.btnpilih').html('Pilih Dokumen');
-                                window.open(response.url,'_blank','width=600,height=400,scrollbars=yes,resizable=yes');
-                            },
-                            error: function(error) {
-                                console.log('Error uploading file:', error);
-                            }
-                        });
-                    }
-                    </script>
-                @endpush
-                <br>
-                <div class="card">
-                    <p class="card-header"> <i class="fa fa-qrcode" aria-hidden></i> QR Code</p>
-                   <img src="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}">
-                   <div class="btn-group">
-                   <a href="data:image/png;base64,{{ base64_encode(QrCode::format('png')->size(300)->generate(url('sura-keluar/'.$post->keyword))) }}" download="{{ $post->keyword }}-qr.jpg" class="btn btn-info btn-sm"> <i class="fa fa-download" aria-hidden></i> QR</a>
-                    <a href="{{ url('qr_surat/'.$post->keyword) }}" download="{{ $post->keyword }}-footnote.jpg" class="btn btn-success btn-sm"> <i class="fa fa-download" aria-hidden></i> Footnote</a>
-                </div>
-                </div>
-
-
-            @endif
                 @if ($module->form->thumbnail)
                     <div class="card">
                         <p class="card-header"> <i class="fa fa-image" aria-hidden></i> Gambar</p>
@@ -281,9 +148,6 @@
 
                 @endif
                 @if ($module->form->category)
-                @if(Auth::user()->isAdminKantor() && $post->type=='unit')
-                <input type="hidden" name="category_id" value="{{ Auth::user()->unit->category_id }}">
-                @else
                     <small for="">Kategori {{ $module->title }} </small><br>
                     <select class="form-control form-control-sm" name="category_id">
                         <option value=""> --pilih-- </option>
@@ -293,12 +157,8 @@
                             </option>
                         @endforeach
                     </select>
-                @endif
-                    @if(Auth::user()->isAdmin())
-                    <div class="text-right"><small class="text-primary">
-                        <a href="{{ route($post->type . '.category') }}"> <i
+                    <div class="text-right"><small class="text-primary"><a href="{{ route($post->type . '.category') }}"> <i
                                     class="fa fa-plus" aria-hidden></i> Tambah Baru</a></small></div>
-                                    @endif
                 @else
                 @endif
                 @if ($module->web->sortable)
@@ -327,15 +187,13 @@
                         </label>
                     </div>
                 @endif
-                @if($module->name=='unit' && !Auth::user()->isAdminKantor())
                     <div class="animated-checkbox">
                         <label>
                             <input {{ $post && $post->pinned == 'Y' ? 'checked=checked' : '' }} type="checkbox"
-                                name="pinned" value="Y"><span class="label-text"><small>Unit Utama
-                                   </small></span>
+                                name="pinned" value="Y"><span class="label-text"><small>Sematkan
+                                    {!! help('Jika dicentang, maka postingan ini akan menjadi prioritas dihalaman jika dikondisikan pada template ') !!}</small></span>
                         </label>
                     </div>
-                    @endif
                 <div class="form-group form-inline">
                     <div class="animated-radio-button">
                         <label>
@@ -352,7 +210,7 @@
                         </label>
                     </div>
                 </div>
-                <button data-toggle="tooltip"   class="btn btn-md btn-primary w-100 add" @if(Auth::user()->id == $post->user_id ||( Auth::user()->isAdminKantor() && $post->type=='unit')) type="submit" title="Simpan Perubahan" @else disabled title="Anda Tidak Memiliki Akses" @endif>SIMPAN</button><br><br>
+                <button type="submit" data-toggle="tooltip" title="Simpan Perubahan"  class="btn btn-md btn-primary w-100 add">SIMPAN</button><br><br>
             </>
         </div>
     </form>

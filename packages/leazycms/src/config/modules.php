@@ -24,17 +24,13 @@ return [
                 'looping_data' => false,
                 'custom_field' => array(
                     ['File Surat','file','required'],
-                    ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas']],
+                    ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas','Undangan','Surat Edaran','Telaah Staf']],
                     ['Perihal','text','required'],
-                    ['Nomor','text','required'],
                     ['Instansi','text','required'],
                     ['Alamat','text','required'],
-                    ['Penandatangan','text','required'],
-                    ['Instansi Tujuan','text','required'],
+                    ['Penandatangan','penandatangan','required'],
+                    ['Instansi Tujuan','instansi_tujuan','required'],
                     ['Diterbitkan','date','required'],
-                    ['Arsipkan Surat yang Sudah TTE','file'],
-                    ['Tujuan Surat Keluar','tujuan_surat_keluar'],
-                    ['Status Tujuan Surat','status_tujuan_surat_keluar'],
                     )
             ],
             'web'=>[
@@ -78,9 +74,7 @@ return [
                     ['Hal','text','required'],
                     ['Tanggal Diterima','date','required'],
                     ['Butuh Dibalas',['Ya','Tidak'],'required'],
-                    ['Surat ini akan diteruskan/ditujukan/didisposisi ke ?','break'],
-                    ['Tujuan Surat','tujuan_surat'],
-                    ['Catatan Disposisi','textarea','required'],
+
                     )
             ],
             'web'=>[
@@ -115,8 +109,11 @@ return [
                 'editor' => false,
                 'category' => true,
                 'tag' => false,
-                'looping_name'=>'Arsip',
-                'looping_data' => false,
+                'looping_name'=>'Pejabat Penandatangan di Unit ini',
+                'looping_data' => array(
+                    ['Nama','text'],
+                    ['Jabatan','text'],
+                    ),
                 'custom_field' => array(
                     ['Alamat','text'],
                     ['Email','text'],

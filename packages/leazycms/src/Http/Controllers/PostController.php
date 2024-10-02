@@ -23,6 +23,9 @@ class PostController extends Controller implements HasMiddleware
     }
     public function index(Request $request)
     {
+// return Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->onType(get_post_type())->withWhereHas('user',function($q)use($req){
+//     $q->whereIn('unit_id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
+// })->with('penerima_surat_masuk')->get();
         $request->user()->hasRole(get_post_type(),__FUNCTION__);
         return view('cms::backend.posts.index');
     }
@@ -68,7 +71,7 @@ if($request->user()->isAdmin()){
     $data = $post->whereBelongsTo($request->user())->with('category','user.unit.parent')->whereType(get_post_type())->find($id);
 
     if(get_post_type()=='surat-masuk'){
-    $data = $post->with('category','user')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $request->user()->unit->title.' - '.$request->user()->unit->parent->title)->find($id);
+    $data = null;
 
     }
 }
@@ -254,6 +257,14 @@ public function update(Request $request, Post $post){
             $data['data_loop'] = $mnews;
         }
     }
+        if($post->type=='surat-masuk'){
+            if($tujuan = $request->disposisi_ke){
+                $post->update([
+                    'redirect_to'=>$tujuan,
+                    'description'=>$request->catatan_disposisi,
+                ]);
+            }
+        }
         $beforelength = strlen($post);
         $beforestatus = $post->status;
         $beforetitle= $post->title;
@@ -285,7 +296,7 @@ public function recache($type){
         }elseif($req->user()->isAdminKantor()){
 
 
-            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->whereType(get_post_type())->withWhereHas('user',function($q)use($req){
+            $data = Post::select(array_merge((new Post)->selected,['data_loop']))->with('category')->withCount('childs')->onType(get_post_type())->withWhereHas('user',function($q)use($req){
                 $q->whereIn('unit_id',array_merge($req->user()->unit->childs->pluck('id')->toArray(),[$req->user()->unit->id]));
             });
 
@@ -303,8 +314,11 @@ public function recache($type){
             $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->whereBelongsTo($req->user());
 
             if (get_post_type() =='surat-masuk') {
-                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $req->user()->unit->title.' - '.$req->user()->unit->parent->title)->published();
+                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->where('redirect_to',$req->user()->unit->id)->published();
             }
+        }
+        if (get_post_type() == 'surat-masuk' ) {
+           $data =  $data->with('penerima_surat_masuk');
         }
 
         return DataTables::of($data)
@@ -371,9 +385,10 @@ public function recache($type){
                     if($row->type=='surat-masuk'){
                         $a['tgl_diterima'] = isset($row->data_field['tanggal_diterima']) && !empty($row->data_field['tanggal_diterima'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_diterima'])).'</small>' :'__';
                         $a['tgl_surat'] = isset($row->data_field['tanggal_surat']) && !empty($row->data_field['tanggal_surat'])? '<small class="badge badge-success">'. date('d F Y',strtotime($row->data_field['tanggal_surat'])).'</small>' :'__';
-                        $catatan = isset($row->data_field['catatan_disposisi']) && !empty($row->data_field['catatan_disposisi']) ? '<small class="text-danger"><br>Catatan : <br><i>'.$row->data_field['catatan_disposisi'].'</i></small>' : '';
+
                         $a['asal'] = isset($row->data_field['instansi_pengirim']) && !empty($row->data_field['instansi_pengirim'])? '<small>'.$row->data_field['instansi_pengirim'].'</small>' : '<small class="text-muted">__</small>';
-                        $a['disposisi'] = isset($row->data_field['tujuan_surat']) && !empty($row->data_field['tujuan_surat'])? '<small>'.$row->data_field['tujuan_surat'].'</small>'. $catatan : '<small class="text-muted">__</small>';
+
+                        $a['disposisi'] =  $row->penerima_surat_masuk? '<small>'.$row->penerima_surat_masuk->title.'</small>'. '<small class="text-danger"><br>Catatan : <br><i><b>'.$row->description.'</b></i></small>': '<small class="text-muted">__</small>';
                     }
                     if($row->type=='surat-keluar'){
                         $a['tujuan'] = '<small>'.(isset($df['instansi_tujuan']) && !empty($df['instansi_tujuan']) ? $df['instansi_tujuan'] : 'Internal').'</small>';
@@ -411,10 +426,8 @@ public function recache($type){
             ->addColumn('action', function ($row) {
 
                 $btn = '<div style="text-align:right"><div class="btn-group ">';
-                if($row->type=='surat-keluar' && !empty($row->data_field['arsipkan_surat_yang_sudah_tte'])){
-                $btn .= '<a class="btn btn-success btn-sm fa fa-envelope" href="'.$row->data_field['arsipkan_surat_yang_sudah_tte'].'" title="Lihat Arsip Surat"></a>';
-                }
-                if($row->type=='surat-masuk' && !empty($row->data_field['file_surat'])){
+
+                if($row->type=='surat-masuk' || $row->type=='surat-keluar' && isset($row->data_field['file_surat']) && !empty($row->data_field['file_surat'])){
                     $btn .= '<a class="btn btn-success btn-sm fa fa-envelope" href="'.$row->data_field['file_surat'].'" title="Lihat Arsip Surat"></a>';
                     }
                 $btn .= current_module()->web->detail && $row->status=='publish' ? '<a target="_blank" href="' .url($row->url.'/').'"  class="btn btn-info btn-sm fa fa-globe"></a>':'';
@@ -422,8 +435,11 @@ public function recache($type){
                     $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
                 }
                 if(request()->user()->isAdminKantor()){
-                    if($row->type!='unit'){
-                        $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-masuk' ? 'fa-edit' : 'fa-eye').'"></a>';
+                    if($row->type!='unit' ){
+                        if($row->type=='surat-masuk'){
+                            $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-masuk' ? 'fa-edit' : 'fa-eye').'"></a>';
+
+                        }
                     }
                     else{
                         $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
@@ -431,7 +447,10 @@ public function recache($type){
 
                 }
                 if(request()->user()->isOperator()){
-                    $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa '.($row->type=='surat-keluar' ? 'fa-edit' : 'fa-eye').'"></a>';
+                    if($row->type=='surat-keluar'){
+                        $btn .= '<a href="' . route(get_post_type().'.edit', $row->id).'"  class="btn btn-warning btn-sm fa fa-edit"></a>';
+
+                    }
                 }
 
 

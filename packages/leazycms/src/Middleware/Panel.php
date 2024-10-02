@@ -18,7 +18,7 @@ class Panel
     {
         $admin_path = admin_path();
         foreach (get_module() as $modul) {
-            if ($request->is($admin_path . '/' . $modul->name)) {
+            if ($request->is( $modul->name)) {
                 config([
                     'modules.current' => [
                         'post_type' => $modul->name,
@@ -27,7 +27,7 @@ class Panel
                 ]);
             }
 
-            if ($request->is($admin_path . '/' . $modul->name . '/*/edit')) {
+            if ($request->is( $modul->name . '/*/edit')) {
                 config([
                     'modules.current' => [
                         'post_type' => $modul->name,
@@ -35,7 +35,7 @@ class Panel
                     ]
                 ]);
             }
-            if ($request->is($admin_path . '/' . $modul->name . '/*/show')) {
+            if ($request->is( $modul->name . '/*/show')) {
 
                 config([
                     'modules.current' => [
@@ -46,7 +46,7 @@ class Panel
             }
 
 
-            if ($request->is($admin_path . '/' . $modul->name . '/category/*/edit')) {
+            if ($request->is( $modul->name . '/category/*/edit')) {
                 $title = 'Edit Kategori ' . $modul->title;
                 config([
                     'modules.current' => [
@@ -55,7 +55,7 @@ class Panel
                     ]
                 ]);
             }
-            if ($request->is($admin_path . '/' . $modul->name . '/category/create')) {
+            if ($request->is( $modul->name . '/category/create')) {
                 $title = 'Tambah Kategori ' . $modul->title;
                 config([
                     'modules.current' => [
@@ -64,7 +64,7 @@ class Panel
                     ]
                 ]);
             }
-            if ($request->is($admin_path . '/' . $modul->name . '/category')) {
+            if ($request->is( $modul->name . '/category')) {
                 $title = 'Kategori ' . $modul->title;
                 config([
                     'modules.current' => [
@@ -74,7 +74,7 @@ class Panel
                 ]);
             }
 
-            if ($request->is($admin_path . '/' . $modul->name . '/create')) {
+            if ($request->is( $modul->name . '/create')) {
 
                 config([
                     'modules.current' => [

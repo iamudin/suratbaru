@@ -7,6 +7,10 @@
 @endif
 @elseif ($r[1] == 'textarea')
 @include('cms::backend.posts.custom_field.textarea')
+@elseif ($r[1] == 'penandatangan')
+@include('cms::backend.posts.custom_field.penandatangan')
+@elseif ($r[1] == 'instansi_tujuan')
+@include('cms::backend.posts.custom_field.instansi_tujuan')
 @elseif ($r[1] == 'file')
 @include('cms::backend.posts.custom_field.file')
 @elseif ($r[1] == 'image')
@@ -36,11 +40,6 @@ $datatujuan = query()->onType('unit')->pinned()->published()->whereNotin('id',[$
 <select @if($post->child ) disabled @endif class="form-control form-control-sm" name="tujuan_surat_keluar">
     <option value="">--pilih tujuan--</option>
     <option {{ isset($field[_us($r[0])]) && !empty($field[_us($r[0])]) && $field[_us($r[0])] == $idtujuaninternal ? 'selected':''  }} value="{{ $idtujuaninternal}}">Internal Kantor</option>
-    {{-- <optgroup label="Instansi Lain">
-        @foreach($datatujuan as $tujuan)
-        <option {{ isset($field[_us($r[0])]) && !empty($field[_us($r[0])]) && $field[_us($r[0])]== $tujuan->id ? 'selected':''  }} value="{{ $tujuan->id }}">{{ $tujuan->title }}</option>
-        @endforeach
-    </optgroup> --}}
 </select>
 @endif
 

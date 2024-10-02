@@ -57,7 +57,7 @@ class PanelController extends Controller implements HasMiddleware
 
         }else{
             $last = Post::select(['created_at', 'id', 'user_id', 'status', 'type', 'title','data_field'])->with('user.unit.parent')->whereUserId($user->id)->whereIn('type', ['surat-keluar','surat-masuk'])->latest('created_at')->limit(5)->published()->get();
-            $post = Post::select('type')->whereUserId($user->id)->orWhereJsonContains('data_field->tujuan_surat', $user->unit->title.' - '.$user->unit->parent->title)->published()->get();
+            $post = Post::select('type')->whereUserId($user->id)->orWhere('redirect_to', $user->unit->id)->published()->get();
             // if (get_post_type() =='surat-masuk') {
             //     $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->withCount('visitors')->whereType(get_post_type())->whereJsonContains('data_field->tujuan_surat', $req->user()->unit->title.' - '.$req->user()->unit->parent->title)->published();
             // }

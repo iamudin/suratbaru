@@ -1,6 +1,7 @@
 <?php
 namespace Leazycms\Web\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Leazycms\Web\Models\Post;
 use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\DB;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\Shared\Converter;
+
 use Barryvdh\Snappy\Facades\SnappyImage;
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -117,7 +119,7 @@ function generate_surat($keyword){
     abort_if(!request()->user()->isOperator(),'403','Access Limited!');
     $data = Post::onType('surat-keluar')->whereKeyword($keyword)->first();
     abort_if(empty($data),404);
-    $filedocx = DB::table('files')->whereFileName(basename($data->field->file_surat))->first()?->file_path;
+    $filedocx = $data->files->where('purpose','qr-to-docx')->first()?->file_path;
     $templatePath = Storage::path($filedocx);
     $imageUrl = url('qr_surat/'.$data->keyword);
     // Tentukan URL gambar
@@ -126,4 +128,22 @@ function generate_surat($keyword){
     // return $this->addFooterImageToExistingDocx($data);
     return $this->addImageToLastFooter($templatePath, $imageUrl, $outputDocPath,$keyword);
 }
+public function upload_docx(Request $request){
+    $post = Post::find($request->post_id);
+
+    $post->addFile([
+        'file'=>$request->file('file'),
+        'purpose'=>'qr_to_docx',
+        'mime_type'=>['application/vnd.openxmlformats-officedocument.wordprocessingml.document']]);
+    return response()->json(['status'=>'success','url'=>url('generate/'.$post->keyword)]);
+
+
+}
+public function cek_surat(Request $request){
+    $post = Post::onType('surat-masuk')->find($request->post_id);
+        $file = url($post->field->file_surat);
+    return response()->json(['status'=>'success','file'=>$file]);
+}
+
+
 }
