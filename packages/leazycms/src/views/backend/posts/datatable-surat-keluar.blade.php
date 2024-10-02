@@ -61,13 +61,15 @@
                     name: 'ext_column.perihal',
                     orderable: false
                 },
+            @if(request()->user()->isOperator())
+
                     {
                         data: 'updated_at',
                         name: 'updated_at',
                         orderable: true,
                         searchable: false
                     },
-
+                    @endif
                 @if (!request()->user()->isAdmin())
                 {
                     data: 'action',

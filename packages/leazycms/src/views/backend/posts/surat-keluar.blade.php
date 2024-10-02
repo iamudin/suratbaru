@@ -10,8 +10,9 @@
         <th style="vertical-align: middle">Asal</th>
         <th style="vertical-align: middle">Tujuan</th>
         <th style="vertical-align: middle">Hal</th>
+        @if(request()->user()->isOperator())
         <th style="width:60px;vertical-align: middle">Diedit</th>
-
+        @endif
         @if (get_post_type()!='unit' && !request()->user()->isAdmin())
 
         <th style="width:40px;vertical-align: middle">Aksi</th>
