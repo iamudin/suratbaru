@@ -1,6 +1,6 @@
 <script type="text/javascript">
     window.addEventListener('DOMContentLoaded', function() {
-     var sort_col = $('.datatable').find("th:contains('Diedit')")[0].cellIndex;
+     var sort_col = $('.datatable').find("th:contains('NO')")[0].cellIndex;
         var table = $('.datatable').DataTable({
             responsive: true,
 
