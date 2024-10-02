@@ -23,7 +23,7 @@ return [
                 'looping_name'=>'Arsip',
                 'looping_data' => false,
                 'custom_field' => array(
-                    ['File Surat','file','required'],
+                    ['File Surat','file'],
                     ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas','Undangan','Surat Edaran','Telaahan Staf']],
                     ['Perihal','text','required'],
                     ['Instansi','text','required'],
