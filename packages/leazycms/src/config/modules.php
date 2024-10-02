@@ -24,7 +24,7 @@ return [
                 'looping_data' => false,
                 'custom_field' => array(
                     ['File Surat','file','required'],
-                    ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas','Undangan','Surat Edaran','Telaah Staf']],
+                    ['Jenis File',['Surat Keluar','Surat Tugas','Nota Dinas','Undangan','Surat Edaran','Telaahan Staf']],
                     ['Perihal','text','required'],
                     ['Instansi','text','required'],
                     ['Alamat','text','required'],
