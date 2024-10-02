@@ -14,7 +14,10 @@
         @endif
         <th style="vertical-align: middle">Disposisi</th>
         <th style="vertical-align: middle">Balasan</th>
+        @if (request()->user()->isAdminKantor())
+
         <th style="width:60px;vertical-align: middle">Diedit</th>
+        @endif
 
         @if (get_post_type()!='unit' && !request()->user()->isAdmin())
 

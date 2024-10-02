@@ -1,6 +1,5 @@
 <script type="text/javascript">
     window.addEventListener('DOMContentLoaded', function() {
-     var sort_col = $('.datatable').find("th:contains('NO')")[0].cellIndex;
         var table = $('.datatable').DataTable({
             responsive: true,
 
@@ -80,9 +79,7 @@
                 @endif
             ],
             responsive: true,
-            order: [
-                [sort_col, 'desc']
-            ],
+
         });
 
 

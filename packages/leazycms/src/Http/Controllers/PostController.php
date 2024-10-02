@@ -306,7 +306,7 @@ public function recache($type){
 
             }
             if (get_post_type() == 'surat-keluar' ) {
-                $data->published();
+                $data = $data->published();
             }
 
 
@@ -320,7 +320,7 @@ public function recache($type){
         if (get_post_type() == 'surat-masuk' ) {
            $data =  $data->with('penerima_surat_masuk');
         }
-
+        $data = $data->latest('id');
         return DataTables::of($data)
             ->addIndexColumn()
             ->order(function ($query) use ($req) {

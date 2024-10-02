@@ -1,6 +1,5 @@
 <script type="text/javascript">
     window.addEventListener('DOMContentLoaded', function() {
-     var sort_col = $('.datatable').find("th:contains('Diedit')")[0].cellIndex;
         var table = $('.datatable').DataTable({
             responsive: true,
 
@@ -76,12 +75,14 @@
                         orderable: false,
                         searchable: false
                     },
+                    @if (request()->user()->isAdminKantor())
                     {
                         data: 'updated_at',
                         name: 'updated_at',
                         orderable: true,
                         searchable: false
                     },
+                    @endif
                 @if (current_module()->web->detail)
                     {
                         data: 'visitors_count',
@@ -100,9 +101,7 @@
                 @endif
             ],
             responsive: true,
-            order: [
-                [sort_col, 'desc']
-            ],
+
         });
 
 
