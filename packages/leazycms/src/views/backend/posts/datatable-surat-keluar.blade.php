@@ -69,7 +69,7 @@
                         orderable: true,
                         searchable: false
                     },
-                    @endif
+            @endif
                 @if (!request()->user()->isAdmin())
                 {
                     data: 'action',
