@@ -350,7 +350,7 @@ function hasExtension($path) {
                 $pin =  $row->pinned == 'Y' ? '<span class="badge badge-danger"> <i class="fa fa-star"></i> Disematkan</span>&nbsp;':'';
 
                 $b = '<b class="text-primary">' . $tit . '</b><br>';
-                $b .= '<small class="text-muted"> ' . $pin . ' <i class="fa fa-user-o"></i> ' . $row->user->name . '  '.$category.' ' . $label . ' ' . $draft . '</small>';
+                $b .= '<small class="text-muted"> ' . $pin . ' <i class="fa fa-user-o"></i> ' . $row->user?->name . '  '.$category.' ' . $label . ' ' . $draft . '</small>';
                 return $b;
             })
             ->addColumn('created_at', function ($row) {
@@ -408,7 +408,7 @@ function hasExtension($path) {
             ->addColumn('data_field', function ($row) {
                 $custom = _us( current_module()->datatable->custom_column);
                 if(in_array($row->type,['surat-keluar','surat-masuk'])){
-                    return '<small>'.$row->user->unit->title .' - '.$row->user->unit->parent?->title.'</small>';
+                    return '<small>'.$row->user->unit?->title .' - '.$row->user->unit->parent?->title.'</small>';
                 }else{
                     return ($custom && !empty($row->data_field) && isset($row->data_field[$custom])) ? '<span class="text-muted">' .$row->data_field[$custom] . '</span>' : '<span class="text-muted">__</span>';
                 }
