@@ -1,17 +1,18 @@
 <?php
 namespace Leazycms\Web\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Leazycms\Web\Models\Tag;
 use Leazycms\Web\Models\Post;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Validation\Rule;
+use Leazycms\Web\Models\Category;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use Leazycms\Web\Models\Category;
-use Illuminate\Support\Facades\Route;
 
 class PostController extends Controller implements HasMiddleware
 {
@@ -101,11 +102,20 @@ return view('cms::backend.posts.form',[
 }
 public function destroy(Request $request,Post $post){
     $request->user()->hasRole(get_post_type(),'delete');
-    // if($post->medias->count()){
-    //     Post::whereParentId($post->id)->whereParentType('post')->whereType('media')->delete();
-    //     recache_media();
-    // }
-    $post->delete();
+    if ($post) {
+        // Hapus semua file terkait
+        foreach ($post->files as $file) {
+            // Hapus file dari storage jika ada
+            if (Storage::exists($file->file_path)) {
+                Storage::delete($file->file_path);
+            }
+            // Hapus record file dari database
+            $file->delete();
+        }
+
+        // Hapus post setelah semua file dihapus
+        $post->forceDelete();
+    }
     switch(get_post_type()){
         case 'banner':
         recache_banner();
