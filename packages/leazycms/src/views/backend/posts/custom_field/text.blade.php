@@ -2,9 +2,9 @@
 @if(get_post_type()=='surat-keluar' && Auth::user()->isOperator())
 @php
 if($r[0]=='Instansi'){
-    $value = Auth::user()->unit->parent->title;
+    $value = Auth::user()->unit?->parent?->title;
 }elseif($r[0]=='Alamat'){
-    $value = Auth::user()->unit->parent->data_field['alamat'];
+    $value = Auth::user()->unit?->parent?->data_field['alamat'];
 }else{
     $value = isset($field[_us($r[0])]) ? trim($field[_us($r[0])]) : null;
 }
