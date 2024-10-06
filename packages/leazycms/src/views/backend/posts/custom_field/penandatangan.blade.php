@@ -1,7 +1,7 @@
 <small>Penandatangan</small>
 
     @php
-    $penandatangan = query()->onType('unit')->whereIn('id',[Auth::user()->unit->id,Auth::user()->unit->parent->id])->select('data_loop')->get();
+    $penandatangan = query()->onType('unit')->whereIn('id',[Auth::user()->unit?->id,Auth::user()->unit?->parent?->id])->select('data_loop')->get();
     $da = [];
     foreach($penandatangan as $row){
         if($row->data_loop){
@@ -41,7 +41,7 @@
 
             $('.autocomplete-suggestion').on('click', function() {
                 $('#autocomplete').val($(this).text());
-                $('#suggestions').empty();  
+                $('#suggestions').empty();
             });
         });
 
