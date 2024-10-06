@@ -116,17 +116,7 @@ public function destroy(Request $request,Post $post){
         // Hapus post setelah semua file dihapus
         $post->forceDelete();
     }
-    switch(get_post_type()){
-        case 'banner':
-        recache_banner();
-        break;
-        case 'menu':
-        recache_menu();
-        break;
-        default:
-        regenerate_cache();
-        break;
-    }
+
 }
 public function show(Post $post,$id){
 abort_if(!is_numeric($id),'403');
