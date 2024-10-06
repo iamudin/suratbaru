@@ -285,6 +285,12 @@ public function recache($type){
         recache_banner();
     }
 }
+function hasExtension($path) {
+    // Menggunakan pathinfo untuk mendapatkan ekstensi
+    $extension = pathinfo($path, PATHINFO_EXTENSION);
+    // Mengembalikan true jika ada ekstensi, false jika tidak ada
+    return !empty($extension);
+}
     public function datatable(Request $req)
     {
         if($req->user()->isAdmin()){
@@ -427,8 +433,8 @@ public function recache($type){
 
                 $btn = '<div style="text-align:right"><div class="btn-group ">';
 
-                if(($row->type=='surat-masuk' || $row->type=='surat-keluar') && isset($row->data_field['file_surat']) && !empty($row->data_field['file_surat']) && !empty(explode('.',$row->data_field['file_surat']))){
-                    $btn .= '<a class="btn btn-success btn-sm fa fa-" href="'.$row->data_field['file_surat'].'" title="Lihat Arsip Surat"></a>';
+                if(($row->type=='surat-masuk' || $row->type=='surat-keluar') && isset($row->data_field['file_surat']) && !empty($row->data_field['file_surat']) && $this->hasExtension($row->data_field['file_surat'])){
+                    $btn .= '<a class="btn btn-success btn-sm fa fa-envelope" href="'.$row->data_field['file_surat'].'" title="Lihat Arsip Surat"></a>';
                     }
                 $btn .= current_module()->web->detail && $row->status=='publish' ? '<a target="_blank" href="' .url($row->url.'/').'"  class="btn btn-info btn-sm fa fa-globe"></a>':'';
                 if(request()->user()->isAdmin()){
