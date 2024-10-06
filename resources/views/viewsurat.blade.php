@@ -45,7 +45,7 @@ return false;
                 <section class="invoice container mt-5">
                     <div class="row mb-4">
                         <div class="col-12 text-center">
-                            <img src="{{url('iconbks.png')}}" height="50" class="pull-left"> <img src="{{url('icon/bsre.png')}}" height="50"  class="pull-right">
+                            <img src="{{get_option('icon')}}" height="50" class="pull-left"> <img src="https://sippn.menpan.go.id/images/article/large/bsre-logo-fullaa4caa4d-20240227111731.png" height="50"  class="pull-right">
                             <br>
                             <br>
 
@@ -103,13 +103,13 @@ return false;
                                         <td>:</td>
                                         <td> {{date('d F Y',strtotime($detail->field->diterbitkan))}}</td>
                                     </tr>
-                                    @if(!empty($detail->field->arsipkan_surat_yang_sudah_tte))
+                                    @if(!empty($detail->field->file_surat))
                                     <tr>
                                         <td class="td1" colspan="3" align="center"><h3>Preview Surat</h3></td>
                                     </tr>
                                     <tr>
                                         <td class="td1" colspan="3">
-                                            <iframe src="https://docs.google.com/viewer?embedded=true&url={{url($detail->field->arsipkan_surat_yang_sudah_tte)}}" style="width:100%;height:100vh;border:0;" frameborder="0"></iframe>
+                                            <iframe src="https://docs.google.com/viewer?embedded=true&url={{url($detail->field->file_surat)}}" style="width:100%;height:100vh;border:0;" frameborder="0"></iframe>
                                         </td>
                                     </tr>
                                     @endif
