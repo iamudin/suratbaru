@@ -273,7 +273,6 @@ public function update(Request $request, Post $post){
         $time['created_at'] =  $beforestatus!='publish' &&  empty($beforetitle) ? now() : $post->created_at;
         $time['updated_at'] =  strlen($timequery) != $beforelength? now() : $post->updated_at;
         query()->whereId($post->id)->update($time);
-        $this->recache(get_post_type());
         return back()->with('success',$module->title.' Berhasil diperbarui');
 }
 public function recache($type){
