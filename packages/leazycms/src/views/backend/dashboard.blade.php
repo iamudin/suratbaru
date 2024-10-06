@@ -12,11 +12,7 @@
 
         @endif
         @if(Auth::user()->isOperator())
-        <p class="text-danger">
-            <strong>Diinformasikan bahwa data surat yang ada sebelumnya akan di pulihkan kembali dalam waktu 3x24 jam. Silahkan tetap menginput data surat keluar saat ini.</strong><br><br>
-            Catatan :<br>
-            - Data surat masuk hanya bisa dinput oleh Admin Kantor / Instansi .
-        </p>
+
         @endif
     </div>
     @endif
