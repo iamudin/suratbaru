@@ -84,7 +84,7 @@ class Panel
                 ]);
             }
         }
-        isNotInSession($request);
+       // isNotInSession($request);
         $response = $next($request);
         if ($response->headers->get('Content-Type') == 'text/html; charset=UTF-8') {
             $content = $response->getContent();
