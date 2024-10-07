@@ -18,6 +18,9 @@ class SuratController extends Controller
   function index(Post $post,$keyword=null){
     $detail = Post::whereKeyword($keyword)->published()->first();
     abort_if(empty($detail),'404');
+    if(request()->segment(1)!='surat-keluar'){
+        return redirect('surat-keluar/'.$keyword);
+    }
     return view('viewsurat',compact('detail'));
   }
 
