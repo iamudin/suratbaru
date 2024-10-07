@@ -15,20 +15,26 @@
 <meta property="og:image" content="{{url(get_option('icon')??noimage())}}" />
 <meta property="og:site_name" content="{{get_option('site_title') ?? 'Web Title'}}" />
 <meta property="og:description" content="Masuk Sebagai Admin / Operator" />
+<style>
+body {
+    background-image: linear-gradient(to right bottom, #00963d, #008162, #006972, #005068, #1c374c, #1c3245, #1c2e3d, #1b2936, #003443, #004045, #004a39, #005221);
+}
+
+</style>
+
   </head>
   <body>
 
-    <section class="login-content" style="background:#000">
+    <section class="login-content" >
       <div class="login-box" style=background:transparent;box-shadow:none;width:100%">
 
         <form method="POST"  style="width:300px;margin-left:auto;margin-right:auto"  action="{{route('login.submit') }}">
           @csrf
           <center>
-            <img height="80" src="{{!empty(get_option('icon')) ? url(get_option('icon')) : noimage()}}">
+            <img height="80" src="{{!empty(get_option('logo')) ? url(get_option('logo')) : noimage()}}">
             <br>
             <br>
-            <h4 class="text-warning">{{get_option('site_title') ?? 'Web Title'}}</h4>
-            <br>
+            <h4 class="text-white">Masuk</h4>
 
             @if(get_option('site_maintenance')=='Y')
             <p class="badge badge-danger">Modus Perbaikan Aktif</p>
