@@ -34,7 +34,7 @@ body {
             <img height="80" src="{{!empty(get_option('logo')) ? url(get_option('logo')) : noimage()}}">
             <br>
             <br>
-            <h4 class="text-white">Masuk</h4>
+            <h4 class="text-warning">. : : Masuk : : .</h4>
 
             @if(get_option('site_maintenance')=='Y')
             <p class="badge badge-danger">Modus Perbaikan Aktif</p>
@@ -62,7 +62,8 @@ body {
           <div class="form-group btn-container">
             <button class="btn btn-warning btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>MASUK</button>
           </div>
-
+          <br>
+          <center><small class="text-white">&copy; E-Surat Kabupaten Bengkalis<br> di Kembangkan oleh DISKOMINFOTIK Kab. Bengkalis</small></center>
         </form>
       </div>
     </section>
