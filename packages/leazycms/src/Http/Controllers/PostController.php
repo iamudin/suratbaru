@@ -174,9 +174,11 @@ public function update(Request $request, Post $post){
         'status'=> 'required|string',
         'mime'=> 'nullable|in:embed,api'
     ];
+$custommsg = [
+    'title.unique' => in_array($post->type,['surat-keluar','surat-masuk']) ? 'Nomor Surat Sudah Digunakan ' : 'Nama Unit Sudah Digunakan'
+];
 
-
-    $data = $request->validate($post_field);
+    $data = $request->validate($post_field,$custommsg);
 
     $data['pinned'] =  isset($request->pinned) ? 'Y': 'N';
     $data['short_content'] =  isset($request->content) && strlen($request->content) > 0 ? str( preg_replace('/\s+/', ' ',strip_tags($request->content)))->words(25,'...') : null;
