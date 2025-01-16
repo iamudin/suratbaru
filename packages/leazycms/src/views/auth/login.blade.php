@@ -63,7 +63,7 @@ body {
             <button class="btn btn-warning btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>MASUK</button>
           </div>
           <br>
-          <center><small class="text-white">&copy; E-Surat Kabupaten Bengkalis<br> di Kembangkan oleh DISKOMINFOTIK Kab. Bengkalis</small></center>
+          <center><small class="text-white">&copy; E-Surat Kabupaten Bengkalis<br> Dikembangkan oleh DISKOMINFOTIK Kab. Bengkalis</small></center>
         </form>
       </div>
     </section>

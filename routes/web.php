@@ -3,6 +3,7 @@
 use Leazycms\FLC\Models\File;
 use Leazycms\Web\Models\Post;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
     use Symfony\Component\Mime\MimeTypes;
     use Illuminate\Support\Facades\Route;
 function getmime($name){

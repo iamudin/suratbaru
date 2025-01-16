@@ -143,7 +143,6 @@
                 @endif
                 @if ($module->form->custom_field)
                     @include('cms::backend.posts.custom_field.form')
-
                 @endif
                 @if($module->name=='surat-masuk')
                 <br>
@@ -152,17 +151,18 @@
                 $tujuan = query()->onType('unit')->select('id','title','user_id','parent_id')->where('id',Auth::user()->unit->id)->with('childs')->get()
                 @endphp
                 <small>Tujukan surat ini ke :</small>
-                <select name="disposisi_ke" class="form-control form-control-sm" id="">
+
+                <select name="disposisi_ke[]"  id="select2"  multiple class="form-control form-control-sm">
                     <option value="">--pilih--</option>
+
                     @foreach($tujuan as $row)
-                    <option {{ $post->redirect_to==$row->id ? 'selected':'' }} value="{{ $row->id }}">{{ $row->title }}</option>
                     @foreach($row->childs as $row2)
-                    <option {{ $post->redirect_to==$row2->id ? 'selected':'' }}  value="{{ $row2->id }}">{{ $row2->title }} - {{ $row->title }}</option>
+                    <option {{ $post->redirect_to && isset(json_decode($post->redirect_to,true)['bidang']) && in_array($row2->id,array_keys(json_decode($post->redirect_to,true)['bidang'])) ? 'selected':'' }}  value="{{ $row2->id }}">{{ $row2->title }}</option>
                     @endforeach
                     @endforeach
                 </select>
                 <small>Catatan:</small>
-                <textarea name="catatan_disposisi" id="" cols="10" rows="2" class="form-control" style="font-size:small">{{ $post->description }}</textarea>
+                <textarea placeholder="Tulis catatan disposisi disini" name="catatan_disposisi" id="" cols="10" rows="2" class="form-control" style="font-size:small">{{ $post->redirect_to && isset(json_decode($post->redirect_to,true)['catatan']) ? json_decode($post->redirect_to,true)['catatan'] : '' }}</textarea>
                 @endif
                 @if ($module->form->looping_data)
                 @include('cms::backend.posts.looping_data.form')

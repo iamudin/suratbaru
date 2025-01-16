@@ -261,9 +261,13 @@ $custommsg = [
     }
         if($post->type=='surat-masuk'){
             if($tujuan = $request->disposisi_ke){
+                $unit = query()->onType('unit')->select('title','id')->whereIn('id',$tujuan)->pluck('title','id')->toArray();
                 $post->update([
-                    'redirect_to'=>$tujuan,
-                    'description'=>$request->catatan_disposisi,
+                    'redirect_to'=>['bidang'=>$unit ?? [],'catatan'=>$request->catatan_disposisi]
+                ]);
+            }else{
+                $post->update([
+                    'redirect_to'=>['bidang'=> [],'catatan'=>trim($request->catatan_disposisi,' ') ?? null]
                 ]);
             }
         }
@@ -321,12 +325,12 @@ function hasExtension($path) {
             $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->whereBelongsTo($req->user());
 
             if (get_post_type() =='surat-masuk') {
-                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')->whereType(get_post_type())->where('redirect_to',$req->user()->unit->id)->published();
+                $data = Post::select((new Post)->selected)->with('user', 'category')->withCount('childs')
+                ->whereType(get_post_type())
+                ->where('redirect_to->bidang', 'like','%"'.$req->user()->unit->id.'"%')->published();
             }
         }
-        if (get_post_type() == 'surat-masuk' ) {
-           $data =  $data->with('penerima_surat_masuk');
-        }
+
         $data = $data->latest('created_at');
         return DataTables::of($data)
             ->addIndexColumn()
@@ -395,7 +399,14 @@ function hasExtension($path) {
 
                         $a['asal'] = isset($row->data_field['instansi_pengirim']) && !empty($row->data_field['instansi_pengirim'])? '<small>'.$row->data_field['instansi_pengirim'].'</small>' : '<small class="text-muted">__</small>';
 
-                        $a['disposisi'] =  $row->penerima_surat_masuk? '<small>'.$row->penerima_surat_masuk->title.'</small>'. '<small class="text-danger"><br>Catatan : <br><i><b>'.$row->description.'</b></i></small>': '<small class="text-muted">__</small>';
+                        $a['disposisi'] =  $row->redirect_to && isset(json_decode($row->redirect_to,true)['bidang']) ? '<small>'
+
+                        .collect(json_decode($row->redirect_to, true)['bidang'])
+                        ->map(fn($value) => "<span class='badge badge-info'>{$value}</span>")
+                        ->implode(' ').
+
+
+                        '</small>'. '<small class="text-danger"><br>Catatan : <br><i><b>'.json_decode($row->redirect_to,true)['catatan'].'</b></i></small>': '<small class="text-muted">__</small>';
                     }
                     if($row->type=='surat-keluar'){
                         $a['tujuan'] = '<small>'.(isset($df['instansi_tujuan']) && !empty($df['instansi_tujuan']) ? $df['instansi_tujuan'] : 'Internal').'</small>';
