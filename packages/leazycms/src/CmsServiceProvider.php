@@ -103,7 +103,9 @@ class CmsServiceProvider extends ServiceProvider
                 $options = \Leazycms\Web\Models\Option::pluck('value', 'name')->toArray();
                 config(['modules.option' => $options]);
             }
-
+            if (empty(Cache::has('media'))) {
+                media_caching();
+            }
             if (empty(Cache::has('menu'))) {
                 recache_menu();
             }
