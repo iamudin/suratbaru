@@ -77,22 +77,20 @@ function leazycms_version(){
 if (!function_exists('media_caching')) {
     function media_caching()
     {
-        foreach (\Leazycms\FLC\Models\File::select('file_path', 'file_name', 'file_type', 'file_size', 'file_auth', 'host')->get() as $row) {
-            if (Storage::exists($row->file_path)) {
-                Cache::remember("media_{$row->file_name}", 60 * 60 * 24, function () use ($row) {
-                    return json_decode(json_encode([
-                        'file_path' => $row->file_path,
-                        'file_type' => $row->file_type,
-                        'file_host' => $row->host,
-                        'file_auth' => $row->file_auth,
-                        'file_size' => $row->file_size,
-                    ]));
-                });
-            }
-        }
-        Cache::remember("media", 60 * 60 * 24, function () {
-            return true;
-        });
+       foreach (\Leazycms\FLC\Models\File::select('file_path', 'file_name', 'file_type', 'file_size', 'file_auth', 'host')->get() as $row) {
+    if (Storage::exists($row->file_path)) {
+        Cache::forever("media_{$row->file_name}", json_decode(json_encode([
+            'file_path' => $row->file_path,
+            'file_type' => $row->file_type,
+            'file_host' => $row->host,
+            'file_auth' => $row->file_auth,
+            'file_size' => $row->file_size,
+        ])));
+    }
+}
+
+// Cache global untuk media
+Cache::forever("media", true);
     }
 }
 if (!function_exists('isNotInSession')) {
