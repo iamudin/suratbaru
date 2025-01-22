@@ -72,7 +72,7 @@
                             }
                             if($post->type=='surat-keluar' && Auth::user()->isOperator()){
 
-                                    $par = $par->where('redirect_to', Auth::user()->unit->id);
+                                    $par = $par->where('redirect_to->bidang', 'like','%"'. Auth::user()->unit->id.'"%');
 
 
                             }
